@@ -96,8 +96,7 @@ export default function Materials() {
         const { error } = await supabase.from('materials').insert([{
           ...payload,
           material_id: generatedId,
-          created_by: user.id
-        }]);
+          created_by: user.id, updated_by: user.id }]);
         if (error) throw error;
       }
 

@@ -118,8 +118,7 @@ export default function Issuances() {
         const { error } = await supabase.from('issuances').insert([{
           ...payload,
           issuance_id: generatedId,
-          created_by: user.id
-        }]);
+          created_by: user.id, updated_by: user.id }]);
         if (error) throw error;
       }
 

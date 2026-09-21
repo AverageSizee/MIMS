@@ -118,8 +118,7 @@ export default function Deliveries() {
         const { error } = await supabase.from('deliveries').insert([{
           ...payload,
           delivery_id: generatedId,
-          created_by: user.id
-        }]);
+          created_by: user.id, updated_by: user.id }]);
         if (error) throw error;
       }
 

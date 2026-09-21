@@ -92,8 +92,7 @@ export default function Suppliers() {
         const { error } = await supabase.from('suppliers').insert([{ 
           ...payload, 
           supplier_id: generatedId,
-          created_by: user.id
-        }]);
+          created_by: user.id, updated_by: user.id }]);
         if (error) throw error;
       }
 
