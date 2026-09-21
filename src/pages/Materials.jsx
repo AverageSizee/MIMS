@@ -181,45 +181,87 @@ export default function Materials() {
         {loading ? (
           <div className="p-8 flex justify-center text-gray-500"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-500">
-                <tr>
-                  {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">ID</th>}
-                  {visibleColumns.includes('name') && <th className="px-6 py-3 font-medium">Name</th>}
-                  {visibleColumns.includes('category') && <th className="px-6 py-3 font-medium">Category</th>}
-                  {visibleColumns.includes('uom') && <th className="px-6 py-3 font-medium">UoM</th>}
-                  {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Unit Cost</th>}
-                  {visibleColumns.includes('levels') && <th className="px-6 py-3 font-medium">Min/Max</th>}
-                  {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
-                  {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
-                  <th className="px-6 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {materials.map((m) => (
-                  <tr key={m.id} className="hover:bg-gray-50">
-                    {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{m.material_id}</td>}
-                    {visibleColumns.includes('name') && <td className="px-6 py-4">{m.name}</td>}
-                    {visibleColumns.includes('category') && <td className="px-6 py-4 text-gray-600">{m.category}</td>}
-                    {visibleColumns.includes('uom') && <td className="px-6 py-4">{m.unit_of_measurement}</td>}
-                    {visibleColumns.includes('cost') && <td className="px-6 py-4 font-medium">${Number(m.unit_cost).toFixed(2)}</td>}
-                    {visibleColumns.includes('levels') && <td className="px-6 py-4 text-gray-500">{m.min_reorder_level} / {m.max_stock_level}</td>}
-                    {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{m.creator?.full_name || 'System'}</td>}
-                    {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{m.updater?.full_name || '-'}</td>}
-                    <td className="px-6 py-4 text-right">
-                      <button onClick={() => handleEdit(m)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    </td>
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-gray-500">
+                  <tr>
+                    {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">ID</th>}
+                    {visibleColumns.includes('name') && <th className="px-6 py-3 font-medium">Name</th>}
+                    {visibleColumns.includes('category') && <th className="px-6 py-3 font-medium">Category</th>}
+                    {visibleColumns.includes('uom') && <th className="px-6 py-3 font-medium">UoM</th>}
+                    {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Unit Cost</th>}
+                    {visibleColumns.includes('levels') && <th className="px-6 py-3 font-medium">Min/Max</th>}
+                    {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                    {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
+                    <th className="px-6 py-3 font-medium text-right">Actions</th>
                   </tr>
-                ))}
-                {materials.length === 0 && (
-                  <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No materials added yet. Add at least 20 for your assignment.</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {materials.map((m) => (
+                    <tr key={m.id} className="hover:bg-gray-50">
+                      {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{m.material_id}</td>}
+                      {visibleColumns.includes('name') && <td className="px-6 py-4">{m.name}</td>}
+                      {visibleColumns.includes('category') && <td className="px-6 py-4 text-gray-600">{m.category}</td>}
+                      {visibleColumns.includes('uom') && <td className="px-6 py-4">{m.unit_of_measurement}</td>}
+                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-medium">${Number(m.unit_cost).toFixed(2)}</td>}
+                      {visibleColumns.includes('levels') && <td className="px-6 py-4 text-gray-500">{m.min_reorder_level} / {m.max_stock_level}</td>}
+                      {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{m.creator?.full_name || 'System'}</td>}
+                      {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{m.updater?.full_name || '-'}</td>}
+                      <td className="px-6 py-4 text-right">
+                        <button onClick={() => handleEdit(m)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {materials.length === 0 && (
+                    <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No materials added yet. Add at least 20 for your assignment.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* Mobile Card View */}
+            <div className="md:hidden flex flex-col divide-y divide-gray-100">
+              {materials.map((m) => (
+                <div key={m.id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      {visibleColumns.includes('id') && <p className="text-xs text-gray-500 font-medium">ID: {m.material_id}</p>}
+                      {visibleColumns.includes('name') && <p className="font-bold text-gray-900 text-lg">{m.name}</p>}
+                    </div>
+                    <button onClick={() => handleEdit(m)} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                    {visibleColumns.includes('category') && (
+                      <div><p className="text-xs text-gray-500">Category</p><p className="font-medium text-gray-800">{m.category}</p></div>
+                    )}
+                    {visibleColumns.includes('uom') && (
+                      <div><p className="text-xs text-gray-500">UoM</p><p className="font-medium text-gray-800">{m.unit_of_measurement}</p></div>
+                    )}
+                    {visibleColumns.includes('cost') && (
+                      <div><p className="text-xs text-gray-500">Unit Cost</p><p className="font-medium text-gray-800">${Number(m.unit_cost).toFixed(2)}</p></div>
+                    )}
+                    {visibleColumns.includes('levels') && (
+                      <div><p className="text-xs text-gray-500">Min/Max</p><p className="font-medium text-gray-800">{m.min_reorder_level} / {m.max_stock_level}</p></div>
+                    )}
+                    {visibleColumns.includes('created_by') && (
+                      <div><p className="text-xs text-gray-500">Added By</p><p className="font-medium text-gray-600 italic">{m.creator?.full_name || 'System'}</p></div>
+                    )}
+                    {visibleColumns.includes('updated_by') && (
+                      <div><p className="text-xs text-gray-500">Updated By</p><p className="font-medium text-gray-600 italic">{m.updater?.full_name || '-'}</p></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {materials.length === 0 && (
+                <div className="p-6 text-center text-gray-500">No materials added yet. Add at least 20 for your assignment.</div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

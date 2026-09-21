@@ -171,43 +171,82 @@ export default function Suppliers() {
         {loading ? (
           <div className="p-8 flex justify-center text-gray-500"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-500">
-                <tr>
-                  {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">ID</th>}
-                  {visibleColumns.includes('name') && <th className="px-6 py-3 font-medium">Company</th>}
-                  {visibleColumns.includes('contact_person') && <th className="px-6 py-3 font-medium">Contact Person</th>}
-                  {visibleColumns.includes('contact_info') && <th className="px-6 py-3 font-medium">Contact Info</th>}
-                  {visibleColumns.includes('supplies') && <th className="px-6 py-3 font-medium">Supplies</th>}
-                  {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
-                  {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
-                  <th className="px-6 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {suppliers.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-50">
-                    {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{s.supplier_id}</td>}
-                    {visibleColumns.includes('name') && <td className="px-6 py-4 font-medium text-gray-900">{s.name}</td>}
-                    {visibleColumns.includes('contact_person') && <td className="px-6 py-4 text-gray-600">{s.contact_person}</td>}
-                    {visibleColumns.includes('contact_info') && <td className="px-6 py-4 text-gray-600">{s.contact_information}</td>}
-                    {visibleColumns.includes('supplies') && <td className="px-6 py-4">{s.materials_supplied}</td>}
-                    {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{s.creator?.full_name || 'System'}</td>}
-                    {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{s.updater?.full_name || '-'}</td>}
-                    <td className="px-6 py-4 text-right">
-                      <button onClick={() => handleEdit(s)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    </td>
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-gray-500">
+                  <tr>
+                    {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">ID</th>}
+                    {visibleColumns.includes('name') && <th className="px-6 py-3 font-medium">Company</th>}
+                    {visibleColumns.includes('contact_person') && <th className="px-6 py-3 font-medium">Contact Person</th>}
+                    {visibleColumns.includes('contact_info') && <th className="px-6 py-3 font-medium">Contact Info</th>}
+                    {visibleColumns.includes('supplies') && <th className="px-6 py-3 font-medium">Supplies</th>}
+                    {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                    {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
+                    <th className="px-6 py-3 font-medium text-right">Actions</th>
                   </tr>
-                ))}
-                {suppliers.length === 0 && (
-                  <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No suppliers added yet. Add at least 5 for your assignment.</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {suppliers.map((s) => (
+                    <tr key={s.id} className="hover:bg-gray-50">
+                      {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{s.supplier_id}</td>}
+                      {visibleColumns.includes('name') && <td className="px-6 py-4 font-medium text-gray-900">{s.name}</td>}
+                      {visibleColumns.includes('contact_person') && <td className="px-6 py-4 text-gray-600">{s.contact_person}</td>}
+                      {visibleColumns.includes('contact_info') && <td className="px-6 py-4 text-gray-600">{s.contact_information}</td>}
+                      {visibleColumns.includes('supplies') && <td className="px-6 py-4">{s.materials_supplied}</td>}
+                      {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{s.creator?.full_name || 'System'}</td>}
+                      {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{s.updater?.full_name || '-'}</td>}
+                      <td className="px-6 py-4 text-right">
+                        <button onClick={() => handleEdit(s)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {suppliers.length === 0 && (
+                    <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No suppliers added yet. Add at least 5 for your assignment.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden flex flex-col divide-y divide-gray-100">
+              {suppliers.map((s) => (
+                <div key={s.id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      {visibleColumns.includes('id') && <p className="text-xs text-gray-500 font-medium">ID: {s.supplier_id}</p>}
+                      {visibleColumns.includes('name') && <p className="font-bold text-gray-900 text-lg">{s.name}</p>}
+                    </div>
+                    <button onClick={() => handleEdit(s)} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                    {visibleColumns.includes('contact_person') && (
+                      <div><p className="text-xs text-gray-500">Contact Person</p><p className="font-medium text-gray-800">{s.contact_person}</p></div>
+                    )}
+                    {visibleColumns.includes('contact_info') && (
+                      <div><p className="text-xs text-gray-500">Contact Info</p><p className="font-medium text-gray-800">{s.contact_information}</p></div>
+                    )}
+                    {visibleColumns.includes('supplies') && (
+                      <div className="sm:col-span-2"><p className="text-xs text-gray-500">Supplies</p><p className="font-medium text-gray-800">{s.materials_supplied}</p></div>
+                    )}
+                    {visibleColumns.includes('created_by') && (
+                      <div><p className="text-xs text-gray-500">Added By</p><p className="font-medium text-gray-600 italic">{s.creator?.full_name || 'System'}</p></div>
+                    )}
+                    {visibleColumns.includes('updated_by') && (
+                      <div><p className="text-xs text-gray-500">Updated By</p><p className="font-medium text-gray-600 italic">{s.updater?.full_name || '-'}</p></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {suppliers.length === 0 && (
+                <div className="p-6 text-center text-gray-500">No suppliers added yet. Add at least 5 for your assignment.</div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

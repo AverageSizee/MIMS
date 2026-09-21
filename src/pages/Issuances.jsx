@@ -220,60 +220,112 @@ export default function Issuances() {
         {loading ? (
           <div className="p-8 flex justify-center text-gray-500"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-500">
-                <tr>
-                  {visibleColumns.includes('id_date') && <th className="px-6 py-3 font-medium">ID / Date</th>}
-                  {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
-                  {visibleColumns.includes('qty') && <th className="px-6 py-3 font-medium">Qty</th>}
-                  {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Total Cost</th>}
-                  {visibleColumns.includes('project_site') && <th className="px-6 py-3 font-medium">Project Site</th>}
-                  {visibleColumns.includes('personnel') && <th className="px-6 py-3 font-medium">Personnel</th>}
-                  {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
-                  {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
-                  <th className="px-6 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {issuances.map((i) => (
-                  <tr key={i.id} className="hover:bg-gray-50">
-                    {visibleColumns.includes('id_date') && (
-                      <td className="px-6 py-4">
-                        <div className="font-medium">{i.issuance_id}</div>
-                        <div className="text-xs text-gray-500">{i.issuance_date}</div>
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-gray-500">
+                  <tr>
+                    {visibleColumns.includes('id_date') && <th className="px-6 py-3 font-medium">ID / Date</th>}
+                    {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
+                    {visibleColumns.includes('qty') && <th className="px-6 py-3 font-medium">Qty</th>}
+                    {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Total Cost</th>}
+                    {visibleColumns.includes('project_site') && <th className="px-6 py-3 font-medium">Project Site</th>}
+                    {visibleColumns.includes('personnel') && <th className="px-6 py-3 font-medium">Personnel</th>}
+                    {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                    {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
+                    <th className="px-6 py-3 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {issuances.map((i) => (
+                    <tr key={i.id} className="hover:bg-gray-50">
+                      {visibleColumns.includes('id_date') && (
+                        <td className="px-6 py-4">
+                          <div className="font-medium">{i.issuance_id}</div>
+                          <div className="text-xs text-gray-500">{i.issuance_date}</div>
+                        </td>
+                      )}
+                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{i.materials?.name}</td>}
+                      {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-red-600">-{i.quantity_issued}</td>}
+                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">${Number(i.total_cost).toFixed(2)}</td>}
+                      {visibleColumns.includes('project_site') && (
+                        <td className="px-6 py-4 text-gray-600">
+                          <div>{i.project_site}</div>
+                          <div className="text-xs truncate max-w-[150px]">{i.purpose}</div>
+                        </td>
+                      )}
+                      {visibleColumns.includes('personnel') && (
+                        <td className="px-6 py-4 text-gray-600 text-xs">
+                          <div>Req: {i.requested_by}</div>
+                          <div>Rel: {i.released_by}</div>
+                        </td>
+                      )}
+                      {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{i.creator?.full_name || 'System'}</td>}
+                      {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{i.updater?.full_name || '-'}</td>}
+                      <td className="px-6 py-4 text-right">
+                        <button onClick={() => handleEdit(i)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
                       </td>
+                    </tr>
+                  ))}
+                  {issuances.length === 0 && (
+                    <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No issuances recorded yet. Add at least 10 for your assignment.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden flex flex-col divide-y divide-gray-100">
+              {issuances.map((i) => (
+                <div key={i.id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      {visibleColumns.includes('id_date') && (
+                        <>
+                          <p className="font-bold text-gray-900 text-lg">{i.issuance_id}</p>
+                          <p className="text-xs text-gray-500">{i.issuance_date}</p>
+                        </>
+                      )}
+                    </div>
+                    <button onClick={() => handleEdit(i)} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                    {visibleColumns.includes('material') && (
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{i.materials?.name}</p></div>
                     )}
-                    {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{i.materials?.name}</td>}
-                    {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-red-600">-{i.quantity_issued}</td>}
-                    {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">${Number(i.total_cost).toFixed(2)}</td>}
+                    {visibleColumns.includes('qty') && (
+                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-red-600">-{i.quantity_issued}</p></div>
+                    )}
+                    {visibleColumns.includes('cost') && (
+                      <div><p className="text-xs text-gray-500">Total Cost</p><p className="font-medium text-gray-800">${Number(i.total_cost).toFixed(2)}</p></div>
+                    )}
                     {visibleColumns.includes('project_site') && (
-                      <td className="px-6 py-4 text-gray-600">
-                        <div>{i.project_site}</div>
-                        <div className="text-xs truncate max-w-[150px]">{i.purpose}</div>
-                      </td>
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Project / Site (Purpose)</p><p className="font-medium text-gray-800">{i.project_site}</p><p className="text-xs text-gray-500">{i.purpose}</p></div>
                     )}
                     {visibleColumns.includes('personnel') && (
-                      <td className="px-6 py-4 text-gray-600 text-xs">
-                        <div>Req: {i.requested_by}</div>
-                        <div>Rel: {i.released_by}</div>
-                      </td>
+                      <div><p className="text-xs text-gray-500">Requested By</p><p className="font-medium text-gray-800">{i.requested_by}</p></div>
                     )}
-                    {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{i.creator?.full_name || 'System'}</td>}
-                    {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{i.updater?.full_name || '-'}</td>}
-                    <td className="px-6 py-4 text-right">
-                      <button onClick={() => handleEdit(i)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {issuances.length === 0 && (
-                  <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No issuances recorded yet. Add at least 10 for your assignment.</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                    {visibleColumns.includes('personnel') && (
+                      <div><p className="text-xs text-gray-500">Released By</p><p className="font-medium text-gray-800">{i.released_by}</p></div>
+                    )}
+                    {visibleColumns.includes('created_by') && (
+                      <div><p className="text-xs text-gray-500">Added By</p><p className="font-medium text-gray-600 italic">{i.creator?.full_name || 'System'}</p></div>
+                    )}
+                    {visibleColumns.includes('updated_by') && (
+                      <div><p className="text-xs text-gray-500">Updated By</p><p className="font-medium text-gray-600 italic">{i.updater?.full_name || '-'}</p></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {issuances.length === 0 && (
+                <div className="p-6 text-center text-gray-500">No issuances recorded yet. Add at least 10 for your assignment.</div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

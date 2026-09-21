@@ -245,68 +245,127 @@ export default function Returns() {
         {loading ? (
           <div className="p-8 flex justify-center text-gray-500"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-500">
-                <tr>
-                  {visibleColumns.includes('id_date') && <th className="px-6 py-3 font-medium">ID / Date</th>}
-                  {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
-                  {visibleColumns.includes('qty') && <th className="px-6 py-3 font-medium">Qty</th>}
-                  {visibleColumns.includes('condition') && <th className="px-6 py-3 font-medium">Condition</th>}
-                  {visibleColumns.includes('project_site') && <th className="px-6 py-3 font-medium">Project Site</th>}
-                  {visibleColumns.includes('personnel') && <th className="px-6 py-3 font-medium">Personnel</th>}
-                  {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
-                  {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
-                  <th className="px-6 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {returns.map((r) => (
-                  <tr key={r.id} className="hover:bg-gray-50">
-                    {visibleColumns.includes('id_date') && (
-                      <td className="px-6 py-4">
-                        <div className="font-medium">{r.return_id}</div>
-                        <div className="text-xs text-gray-500">{r.return_date}</div>
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-gray-500">
+                  <tr>
+                    {visibleColumns.includes('id_date') && <th className="px-6 py-3 font-medium">ID / Date</th>}
+                    {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
+                    {visibleColumns.includes('qty') && <th className="px-6 py-3 font-medium">Qty</th>}
+                    {visibleColumns.includes('condition') && <th className="px-6 py-3 font-medium">Condition</th>}
+                    {visibleColumns.includes('project_site') && <th className="px-6 py-3 font-medium">Project Site</th>}
+                    {visibleColumns.includes('personnel') && <th className="px-6 py-3 font-medium">Personnel</th>}
+                    {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                    {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
+                    <th className="px-6 py-3 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {returns.map((r) => (
+                    <tr key={r.id} className="hover:bg-gray-50">
+                      {visibleColumns.includes('id_date') && (
+                        <td className="px-6 py-4">
+                          <div className="font-medium">{r.return_id}</div>
+                          <div className="text-xs text-gray-500">{r.return_date}</div>
+                        </td>
+                      )}
+                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{r.materials?.name}</td>}
+                      {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-green-600">+{r.quantity_returned}</td>}
+                      {visibleColumns.includes('condition') && (
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            r.condition === 'Good' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {r.condition}
+                          </span>
+                        </td>
+                      )}
+                      {visibleColumns.includes('project_site') && (
+                        <td className="px-6 py-4 text-gray-600">
+                          <div>{r.project_site}</div>
+                          <div className="text-xs truncate max-w-[150px]">{r.reason}</div>
+                        </td>
+                      )}
+                      {visibleColumns.includes('personnel') && (
+                        <td className="px-6 py-4 text-gray-600 text-xs">
+                          <div>Ret: {r.returned_by}</div>
+                          <div>Rec: {r.received_by}</div>
+                        </td>
+                      )}
+                      {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{r.creator?.full_name || 'System'}</td>}
+                      {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{r.updater?.full_name || '-'}</td>}
+                      <td className="px-6 py-4 text-right">
+                        <button onClick={() => handleEdit(r)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
                       </td>
+                    </tr>
+                  ))}
+                  {returns.length === 0 && (
+                    <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No returns recorded yet. Add at least 3 for your assignment.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden flex flex-col divide-y divide-gray-100">
+              {returns.map((r) => (
+                <div key={r.id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      {visibleColumns.includes('id_date') && (
+                        <>
+                          <p className="font-bold text-gray-900 text-lg">{r.return_id}</p>
+                          <p className="text-xs text-gray-500">{r.return_date}</p>
+                        </>
+                      )}
+                    </div>
+                    <button onClick={() => handleEdit(r)} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                    {visibleColumns.includes('material') && (
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{r.materials?.name}</p></div>
                     )}
-                    {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{r.materials?.name}</td>}
-                    {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-green-600">+{r.quantity_returned}</td>}
+                    {visibleColumns.includes('qty') && (
+                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-green-600">+{r.quantity_returned}</p></div>
+                    )}
                     {visibleColumns.includes('condition') && (
-                      <td className="px-6 py-4">
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Condition</p>
                         <span className={`px-2 py-1 rounded text-xs ${
                           r.condition === 'Good' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
                           {r.condition}
                         </span>
-                      </td>
+                      </div>
                     )}
                     {visibleColumns.includes('project_site') && (
-                      <td className="px-6 py-4 text-gray-600">
-                        <div>{r.project_site}</div>
-                        <div className="text-xs truncate max-w-[150px]">{r.reason}</div>
-                      </td>
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Project / Site (Reason)</p><p className="font-medium text-gray-800">{r.project_site}</p><p className="text-xs text-gray-500">{r.reason}</p></div>
                     )}
                     {visibleColumns.includes('personnel') && (
-                      <td className="px-6 py-4 text-gray-600 text-xs">
-                        <div>Ret: {r.returned_by}</div>
-                        <div>Rec: {r.received_by}</div>
-                      </td>
+                      <div><p className="text-xs text-gray-500">Returned By</p><p className="font-medium text-gray-800">{r.returned_by}</p></div>
                     )}
-                    {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{r.creator?.full_name || 'System'}</td>}
-                    {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{r.updater?.full_name || '-'}</td>}
-                    <td className="px-6 py-4 text-right">
-                      <button onClick={() => handleEdit(r)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {returns.length === 0 && (
-                  <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No returns recorded yet. Add at least 3 for your assignment.</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                    {visibleColumns.includes('personnel') && (
+                      <div><p className="text-xs text-gray-500">Received By</p><p className="font-medium text-gray-800">{r.received_by}</p></div>
+                    )}
+                    {visibleColumns.includes('created_by') && (
+                      <div><p className="text-xs text-gray-500">Added By</p><p className="font-medium text-gray-600 italic">{r.creator?.full_name || 'System'}</p></div>
+                    )}
+                    {visibleColumns.includes('updated_by') && (
+                      <div><p className="text-xs text-gray-500">Updated By</p><p className="font-medium text-gray-600 italic">{r.updater?.full_name || '-'}</p></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {returns.length === 0 && (
+                <div className="p-6 text-center text-gray-500">No returns recorded yet. Add at least 3 for your assignment.</div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

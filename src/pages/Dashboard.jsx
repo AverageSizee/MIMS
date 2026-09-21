@@ -66,7 +66,7 @@ export default function Dashboard() {
         <div className="px-6 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-800">Inventory Status</h3>
         </div>
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
@@ -105,6 +105,47 @@ export default function Dashboard() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden flex flex-col divide-y divide-gray-100">
+          {inventory.map((item) => (
+            <div key={item.id} className="p-4 space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Material ID</p>
+                  <p className="font-bold text-gray-900">{item.material_id}</p>
+                </div>
+                <span className={`px-2 py-1 rounded-md text-xs font-medium
+                  ${item.status === 'NORMAL' ? 'bg-green-100 text-green-700' : 
+                    item.status === 'REORDER' ? 'bg-amber-100 text-amber-700' : 
+                    item.status === 'OUT OF STOCK' ? 'bg-red-100 text-red-700' : 
+                    'bg-purple-100 text-purple-700'}`}
+                >
+                  {item.status}
+                </span>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 font-medium">Name</p>
+                <p className="text-gray-800">{item.name}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Current Stock</p>
+                  <p className="text-gray-800">{item.current_stock} {item.unit_of_measurement}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Min / Max</p>
+                  <p className="text-gray-800">{item.min_reorder_level} / {item.max_stock_level}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+          {inventory.length === 0 && (
+            <div className="p-6 text-center text-gray-500">
+              No materials found. Add materials to see them here.
+            </div>
+          )}
         </div>
       </div>
     </div>

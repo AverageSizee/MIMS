@@ -225,57 +225,101 @@ export default function Employees() {
         {loading ? (
           <div className="p-8 flex justify-center text-gray-500"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-500">
-                <tr>
-                  <th className="px-6 py-3 font-medium">User</th>
-                  <th className="px-6 py-3 font-medium">Email</th>
-                  <th className="px-6 py-3 font-medium">Role</th>
-                  <th className="px-6 py-3 font-medium">Status</th>
-                  <th className="px-6 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {employees.map((emp) => (
-                  <tr key={emp.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium flex items-center space-x-3 text-gray-900">
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-gray-500">
+                  <tr>
+                    <th className="px-6 py-3 font-medium">User</th>
+                    <th className="px-6 py-3 font-medium">Email</th>
+                    <th className="px-6 py-3 font-medium">Role</th>
+                    <th className="px-6 py-3 font-medium">Status</th>
+                    <th className="px-6 py-3 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {employees.map((emp) => (
+                    <tr key={emp.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 font-medium flex items-center space-x-3 text-gray-900">
+                        <div className="bg-gray-100 p-2 rounded-full">
+                          <User className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <span>{emp.full_name}</span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">{emp.email}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center w-fit
+                          ${emp.role === 'manager' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}
+                        `}>
+                          {emp.role === 'manager' && <ShieldCheck className="w-3 h-3 mr-1" />}
+                          {emp.role.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {emp.requires_password_change ? (
+                          <span className="text-amber-600 text-xs font-medium bg-amber-50 px-2 py-1 rounded-full">Must Reset Password</span>
+                        ) : (
+                          <span className="text-green-600 text-xs font-medium bg-green-50 px-2 py-1 rounded-full">Active</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right space-x-2">
+                        <button onClick={() => handleEdit(emp)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        {user.id !== emp.id && (
+                          <button onClick={() => handleDelete(emp.id, emp.full_name)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden flex flex-col divide-y divide-gray-100">
+              {employees.map((emp) => (
+                <div key={emp.id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center space-x-3">
                       <div className="bg-gray-100 p-2 rounded-full">
                         <User className="w-4 h-4 text-gray-500" />
                       </div>
-                      <span>{emp.full_name}</span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">{emp.email}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center w-fit
-                        ${emp.role === 'manager' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}
-                      `}>
-                        {emp.role === 'manager' && <ShieldCheck className="w-3 h-3 mr-1" />}
-                        {emp.role.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {emp.requires_password_change ? (
-                        <span className="text-amber-600 text-xs font-medium bg-amber-50 px-2 py-1 rounded-full">Must Reset Password</span>
-                      ) : (
-                        <span className="text-green-600 text-xs font-medium bg-green-50 px-2 py-1 rounded-full">Active</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button onClick={() => handleEdit(emp)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                      <div>
+                        <p className="font-bold text-gray-900 text-lg">{emp.full_name}</p>
+                        <p className="text-sm text-gray-500">{emp.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex space-x-1">
+                      <button onClick={() => handleEdit(emp)} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
                         <Edit2 className="w-4 h-4" />
                       </button>
                       {user.id !== emp.id && (
-                        <button onClick={() => handleDelete(emp.id, emp.full_name)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <button onClick={() => handleDelete(emp.id, emp.full_name)} className="p-2 text-red-600 bg-red-50 rounded-lg">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <span className={`px-2 py-1 rounded-md text-xs font-medium flex items-center w-fit
+                      ${emp.role === 'manager' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}
+                    `}>
+                      {emp.role === 'manager' && <ShieldCheck className="w-3 h-3 mr-1" />}
+                      {emp.role.toUpperCase()}
+                    </span>
+                    {emp.requires_password_change ? (
+                      <span className="text-amber-600 text-xs font-medium bg-amber-50 px-2 py-1 rounded-md border border-amber-100">Must Reset Password</span>
+                    ) : (
+                      <span className="text-green-600 text-xs font-medium bg-green-50 px-2 py-1 rounded-md border border-green-100">Active</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
