@@ -124,8 +124,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200">
           <h3 className="text-center font-bold text-gray-800 mb-4 text-sm">Inventory Status Classification Breakdown</h3>
-          <div className="relative h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="relative w-full" style={{ minHeight: '300px' }}>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={pieData}
@@ -162,9 +162,9 @@ export default function Dashboard() {
 
         <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200">
           <h3 className="text-center font-bold text-gray-800 mb-4 text-sm">Valuation Breakdown by Category (₱)</h3>
-          <div className="relative h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 35, left: 0, bottom: 5 }}>
+          <div className="relative w-full" style={{ minHeight: '300px' }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 35, left: 0, bottom: 20 }}>
                 <XAxis type="number" hide />
                 <YAxis dataKey="category" type="category" axisLine={false} tickLine={false} width={85} tick={{fontSize: 10, fill: '#4b5563'}} />
                 <Tooltip formatter={(value) => `₱${value.toLocaleString()}`} />
