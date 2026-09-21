@@ -42,20 +42,20 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
           <div className="bg-blue-100 p-3 rounded-lg"><Package className="text-blue-600 w-6 h-6" /></div>
           <div><p className="text-sm text-gray-500 font-medium">Total Materials</p><p className="text-2xl font-bold">{stats.total}</p></div>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
           <div className="bg-green-100 p-3 rounded-lg"><CheckCircle2 className="text-green-600 w-6 h-6" /></div>
           <div><p className="text-sm text-gray-500 font-medium">Normal Stock</p><p className="text-2xl font-bold">{stats.normal}</p></div>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
           <div className="bg-amber-100 p-3 rounded-lg"><AlertTriangle className="text-amber-600 w-6 h-6" /></div>
           <div><p className="text-sm text-gray-500 font-medium">Needs Reorder</p><p className="text-2xl font-bold">{stats.reorder}</p></div>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
           <div className="bg-red-100 p-3 rounded-lg"><XCircle className="text-red-600 w-6 h-6" /></div>
           <div><p className="text-sm text-gray-500 font-medium">Out of Stock</p><p className="text-2xl font-bold">{stats.outOfStock}</p></div>
         </div>
