@@ -248,7 +248,7 @@ export default function Returns() {
           <>
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-500">
+                <thead className="bg-slate-900 text-white">
                   <tr>
                     {visibleColumns.includes('id_date') && <th className="px-6 py-3 font-medium">ID / Date</th>}
                     {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}

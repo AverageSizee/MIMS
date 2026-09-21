@@ -228,7 +228,7 @@ export default function Employees() {
           <>
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-500">
+                <thead className="bg-slate-900 text-white">
                   <tr>
                     <th className="px-6 py-3 font-medium">User</th>
                     <th className="px-6 py-3 font-medium">Email</th>

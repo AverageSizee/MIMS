@@ -68,7 +68,7 @@ export default function Dashboard() {
         </div>
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-gray-500">
+            <thead className="bg-slate-900 text-white">
               <tr>
                 <th className="px-6 py-3 font-medium">Material ID</th>
                 <th className="px-6 py-3 font-medium">Name</th>
@@ -85,11 +85,11 @@ export default function Dashboard() {
                   <td className="px-6 py-4 font-medium">{item.current_stock} {item.unit_of_measurement}</td>
                   <td className="px-6 py-4 text-gray-500">{item.min_reorder_level} / {item.max_stock_level}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium
-                      ${item.status === 'NORMAL' ? 'bg-green-100 text-green-700' : 
-                        item.status === 'REORDER' ? 'bg-amber-100 text-amber-700' : 
-                        item.status === 'OUT OF STOCK' ? 'bg-red-100 text-red-700' : 
-                        'bg-purple-100 text-purple-700'}`}
+                    <span className={`px-2 py-1 rounded text-xs font-bold border tracking-wider uppercase
+                      ${item.status === 'NORMAL' ? 'border-green-500 text-green-700 bg-green-50/50' : 
+                        item.status === 'REORDER' ? 'border-amber-500 text-amber-700 bg-amber-50/50' : 
+                        item.status === 'OUT OF STOCK' ? 'border-red-500 text-red-700 bg-red-50/50' : 
+                        'border-blue-500 text-blue-700 bg-blue-50/50'}`}
                     >
                       {item.status}
                     </span>
@@ -116,11 +116,11 @@ export default function Dashboard() {
                   <p className="text-xs text-gray-500 font-medium">Material ID</p>
                   <p className="font-bold text-gray-900">{item.material_id}</p>
                 </div>
-                <span className={`px-2 py-1 rounded-md text-xs font-medium
-                  ${item.status === 'NORMAL' ? 'bg-green-100 text-green-700' : 
-                    item.status === 'REORDER' ? 'bg-amber-100 text-amber-700' : 
-                    item.status === 'OUT OF STOCK' ? 'bg-red-100 text-red-700' : 
-                    'bg-purple-100 text-purple-700'}`}
+                <span className={`px-2 py-1 rounded text-xs font-bold border tracking-wider uppercase
+                      ${item.status === 'NORMAL' ? 'border-green-500 text-green-700 bg-green-50/50' : 
+                        item.status === 'REORDER' ? 'border-amber-500 text-amber-700 bg-amber-50/50' : 
+                        item.status === 'OUT OF STOCK' ? 'border-red-500 text-red-700 bg-red-50/50' : 
+                        'border-blue-500 text-blue-700 bg-blue-50/50'}`}
                 >
                   {item.status}
                 </span>

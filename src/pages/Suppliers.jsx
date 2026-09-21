@@ -174,7 +174,7 @@ export default function Suppliers() {
           <>
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-500">
+                <thead className="bg-slate-900 text-white">
                   <tr>
                     {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">ID</th>}
                     {visibleColumns.includes('name') && <th className="px-6 py-3 font-medium">Company</th>}
