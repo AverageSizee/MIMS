@@ -84,47 +84,47 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-end border-b pb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b pb-4 gap-2">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">7. EXECUTIVE INVENTORY DASHBOARD VISUALIZER</h2>
+          <h2 className="text-xl font-bold text-gray-800 uppercase">Executive Inventory Dashboard</h2>
           <p className="text-sm text-gray-500">Live Overview & Automated Health Metrics</p>
         </div>
       </div>
 
-      {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-white p-4 rounded-md border-l-4 border-l-blue-900 border-y border-r border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-500 mb-1 tracking-wider">TOTAL VALUATION</p>
-          <p className="text-2xl font-bold text-gray-900">₱{totalValuation.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})}</p>
+      {/* KPI Cards Row - Mobile Friendly Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="col-span-2 lg:col-span-1 bg-white p-3 md:p-4 rounded-md border-l-4 border-l-blue-900 border-y border-r border-gray-200 shadow-sm flex flex-col justify-center">
+          <p className="text-[10px] md:text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase truncate">Total Valuation</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">₱{totalValuation.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})}</p>
           <p className="text-xs text-gray-500 mt-1">{totalItems} Stock Items</p>
         </div>
-        <div className="bg-white p-4 rounded-md border-l-4 border-l-green-500 border-y border-r border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-500 mb-1 tracking-wider">NORMAL STATUS</p>
-          <p className="text-2xl font-bold text-gray-900">{normalCount} Items</p>
-          <p className="text-xs text-gray-500 mt-1">{normalPct}% of Inventory</p>
+        <div className="bg-white p-3 md:p-4 rounded-md border-l-4 border-l-green-500 border-y border-r border-gray-200 shadow-sm flex flex-col justify-center">
+          <p className="text-[10px] md:text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase truncate">Normal</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{normalCount} Items</p>
+          <p className="text-[10px] md:text-xs text-gray-500 mt-1">{normalPct}% of Inventory</p>
         </div>
-        <div className="bg-white p-4 rounded-md border-l-4 border-l-amber-500 border-y border-r border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-500 mb-1 tracking-wider">REORDER NEEDED</p>
-          <p className="text-2xl font-bold text-gray-900">{reorderCount} Items</p>
-          <p className="text-xs text-gray-500 mt-1">Action Required</p>
+        <div className="bg-white p-3 md:p-4 rounded-md border-l-4 border-l-amber-500 border-y border-r border-gray-200 shadow-sm flex flex-col justify-center">
+          <p className="text-[10px] md:text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase truncate">Reorder</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{reorderCount} Items</p>
+          <p className="text-[10px] md:text-xs text-gray-500 mt-1 truncate">Action Required</p>
         </div>
-        <div className="bg-white p-4 rounded-md border-l-4 border-l-red-500 border-y border-r border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-500 mb-1 tracking-wider">OUT OF STOCK</p>
-          <p className="text-2xl font-bold text-gray-900">{outOfStockCount} Items</p>
-          <p className="text-xs text-gray-500 mt-1">Critical Shortage</p>
+        <div className="bg-white p-3 md:p-4 rounded-md border-l-4 border-l-red-500 border-y border-r border-gray-200 shadow-sm flex flex-col justify-center">
+          <p className="text-[10px] md:text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase truncate">Out of Stock</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{outOfStockCount} Items</p>
+          <p className="text-[10px] md:text-xs text-gray-500 mt-1 truncate">Critical Shortage</p>
         </div>
-        <div className="bg-white p-4 rounded-md border-l-4 border-l-blue-500 border-y border-r border-gray-200 shadow-sm">
-          <p className="text-xs font-bold text-gray-500 mb-1 tracking-wider">OVERSTOCK ITEM</p>
-          <p className="text-2xl font-bold text-gray-900">{overstockCount} Items</p>
-          <p className="text-xs text-gray-500 mt-1">Cap Exceeded</p>
+        <div className="bg-white p-3 md:p-4 rounded-md border-l-4 border-l-blue-500 border-y border-r border-gray-200 shadow-sm flex flex-col justify-center">
+          <p className="text-[10px] md:text-xs font-bold text-gray-500 mb-1 tracking-wider uppercase truncate">Overstock</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900">{overstockCount} Items</p>
+          <p className="text-[10px] md:text-xs text-gray-500 mt-1 truncate">Cap Exceeded</p>
         </div>
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-md shadow-sm border border-gray-200">
+        <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200 flex flex-col">
           <h3 className="text-center font-bold text-gray-800 mb-4 text-sm">Inventory Status Classification Breakdown</h3>
-          <div className="h-64 flex justify-center items-center">
+          <div className="relative h-64 w-full flex justify-center items-center flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -143,56 +143,59 @@ export default function Dashboard() {
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-            {/* Custom Legend */}
-            <div className="absolute right-4 md:right-12 space-y-2 text-xs font-medium text-gray-600">
+            {/* Custom Legend - Added z-10 and adjusted positioning */}
+            <div className="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 space-y-3 text-[10px] md:text-xs font-medium text-gray-600 bg-white/80 p-2 rounded z-10">
               {pieData.map((d, i) => (
                 <div key={i} className="flex items-center">
-                  <div className="w-3 h-3 mr-2 rounded-sm" style={{ backgroundColor: d.color }}></div>
+                  <div className="w-3 h-3 mr-2 rounded-sm shrink-0" style={{ backgroundColor: d.color }}></div>
                   {d.name}
                 </div>
               ))}
             </div>
-            {/* Center Label */}
-            <div className="absolute font-bold text-lg text-gray-800">{totalItems} Items</div>
+            {/* Center Label - Added z-0 to ensure it stays in background behind tooltips */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-lg text-gray-800 flex flex-col items-center justify-center pointer-events-none">
+              <span>{totalItems}</span>
+              <span className="text-xs font-normal text-gray-500">Items</span>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-md shadow-sm border border-gray-200">
-          <h3 className="text-center font-bold text-gray-800 mb-4 text-sm">Valuation Breakdown by Material Category (₱)</h3>
-          <div className="h-64">
+        <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200 flex flex-col">
+          <h3 className="text-center font-bold text-gray-800 mb-4 text-sm">Valuation Breakdown by Category (₱)</h3>
+          <div className="h-64 w-full flex-1">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 35, left: 0, bottom: 5 }}>
                 <XAxis type="number" hide />
-                <YAxis dataKey="category" type="category" axisLine={false} tickLine={false} width={100} tick={{fontSize: 12, fill: '#4b5563'}} />
+                <YAxis dataKey="category" type="category" axisLine={false} tickLine={false} width={85} tick={{fontSize: 10, fill: '#4b5563'}} />
                 <Tooltip formatter={(value) => `₱${value.toLocaleString()}`} />
                 <Bar dataKey="value" fill="#1e3a8a" radius={[0, 4, 4, 0]} barSize={24}>
-                  <LabelList dataKey="label" position="right" fill="#4b5563" fontSize={11} fontWeight="bold" />
+                  <LabelList dataKey="label" position="right" fill="#4b5563" fontSize={10} fontWeight="bold" />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <p className="text-center text-xs text-gray-400 mt-2">Stock Value in Thousands (PHP)</p>
+            <p className="text-center text-[10px] text-gray-400 mt-2">Stock Value in Thousands (PHP)</p>
           </div>
         </div>
       </div>
 
       {/* Critical Reorder & Stockout Table */}
       <div>
-        <div className="flex justify-between items-end border-b pb-2 mb-4">
-          <h2 className="text-lg font-bold text-gray-800 uppercase">Critical Reorder & Stockout Action List</h2>
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Filtered Dashboard Alert Table</span>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b pb-2 mb-4 gap-2">
+          <h2 className="text-lg font-bold text-gray-800 uppercase">Critical Action List</h2>
+          <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest border border-gray-200 px-2 py-1 rounded bg-gray-50">Filtered Dashboard Alert Table</span>
         </div>
         
-        <div className="bg-white shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white shadow-sm border border-gray-200 overflow-hidden rounded-md">
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-900 text-white">
                 <tr>
                   <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Material ID</th>
                   <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Material Description</th>
-                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Current Stock</th>
-                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Reorder Level</th>
-                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Target Level</th>
-                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider text-right">Current Stock</th>
+                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider text-right">Reorder Level</th>
+                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider text-right">Target Level</th>
+                  <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider text-center">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -200,10 +203,10 @@ export default function Dashboard() {
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 font-bold text-gray-900">{item.material_id}</td>
                     <td className="px-6 py-4 text-gray-700">{item.name}</td>
-                    <td className="px-6 py-4 font-mono font-bold text-gray-800">{item.current_stock} {item.unit_of_measurement}</td>
-                    <td className="px-6 py-4 font-mono text-gray-700">{item.min_reorder_level}</td>
-                    <td className="px-6 py-4 font-mono text-gray-700">{item.max_stock_level}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 font-mono font-bold text-gray-800 text-right">{item.current_stock} <span className="text-xs text-gray-500">{item.unit_of_measurement}</span></td>
+                    <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.min_reorder_level}</td>
+                    <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.max_stock_level}</td>
+                    <td className="px-6 py-4 text-center">
                       <span className={`px-2 py-1 rounded text-[10px] font-bold border tracking-wider uppercase
                         ${item.status === 'REORDER' ? 'border-amber-500 text-amber-700 bg-amber-50/50' : 
                           'border-red-500 text-red-700 bg-red-50/50'}`}
@@ -230,28 +233,28 @@ export default function Dashboard() {
               <div key={item.id} className="p-4 space-y-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-xs text-gray-500 font-bold tracking-wider">ID: {item.material_id}</p>
-                    <p className="font-bold text-gray-900">{item.name}</p>
+                    <p className="text-[10px] text-gray-500 font-bold tracking-wider uppercase">ID: {item.material_id}</p>
+                    <p className="font-bold text-gray-900 text-sm leading-tight mt-1">{item.name}</p>
                   </div>
-                  <span className={`px-2 py-1 rounded text-[10px] font-bold border tracking-wider uppercase
+                  <span className={`px-2 py-1 rounded text-[10px] font-bold border tracking-wider uppercase shrink-0 ml-2
                         ${item.status === 'REORDER' ? 'border-amber-500 text-amber-700 bg-amber-50/50' : 
                           'border-red-500 text-red-700 bg-red-50/50'}`}
                   >
                     {item.status}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-center text-sm bg-gray-50 p-2 rounded">
-                  <div>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase">Current</p>
-                    <p className="font-mono font-bold text-gray-800">{item.current_stock} <span className="text-xs">{item.unit_of_measurement}</span></p>
+                <div className="grid grid-cols-3 gap-2 text-center text-sm bg-gray-50 p-2 rounded-md border border-gray-100">
+                  <div className="flex flex-col">
+                    <p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Current</p>
+                    <p className="font-mono font-bold text-gray-800">{item.current_stock} <span className="text-[10px] text-gray-500">{item.unit_of_measurement}</span></p>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase">Reorder</p>
-                    <p className="font-mono">{item.min_reorder_level}</p>
+                  <div className="flex flex-col border-l border-gray-200">
+                    <p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Reorder</p>
+                    <p className="font-mono text-gray-700">{item.min_reorder_level}</p>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase">Target</p>
-                    <p className="font-mono">{item.max_stock_level}</p>
+                  <div className="flex flex-col border-l border-gray-200">
+                    <p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Target</p>
+                    <p className="font-mono text-gray-700">{item.max_stock_level}</p>
                   </div>
                 </div>
               </div>
