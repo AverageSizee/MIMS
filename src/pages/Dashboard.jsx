@@ -122,9 +122,9 @@ export default function Dashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200 flex flex-col">
+        <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200">
           <h3 className="text-center font-bold text-gray-800 mb-4 text-sm">Inventory Status Classification Breakdown</h3>
-          <div className="relative h-64 w-full flex justify-center items-center flex-1">
+          <div className="relative h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -143,8 +143,8 @@ export default function Dashboard() {
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-            {/* Custom Legend - Added z-10 and adjusted positioning */}
-            <div className="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 space-y-3 text-[10px] md:text-xs font-medium text-gray-600 bg-white/80 p-2 rounded z-10">
+            {/* Custom Legend */}
+            <div className="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 space-y-3 text-[10px] md:text-xs font-medium text-gray-600 bg-white/80 p-2 rounded z-10 pointer-events-none">
               {pieData.map((d, i) => (
                 <div key={i} className="flex items-center">
                   <div className="w-3 h-3 mr-2 rounded-sm shrink-0" style={{ backgroundColor: d.color }}></div>
@@ -152,7 +152,7 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-            {/* Center Label - Added z-0 to ensure it stays in background behind tooltips */}
+            {/* Center Label */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold text-lg text-gray-800 flex flex-col items-center justify-center pointer-events-none">
               <span>{totalItems}</span>
               <span className="text-xs font-normal text-gray-500">Items</span>
@@ -160,9 +160,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200 flex flex-col">
+        <div className="bg-white p-4 md:p-6 rounded-md shadow-sm border border-gray-200">
           <h3 className="text-center font-bold text-gray-800 mb-4 text-sm">Valuation Breakdown by Category (₱)</h3>
-          <div className="h-64 w-full flex-1">
+          <div className="relative h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 35, left: 0, bottom: 5 }}>
                 <XAxis type="number" hide />
@@ -173,7 +173,7 @@ export default function Dashboard() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <p className="text-center text-[10px] text-gray-400 mt-2">Stock Value in Thousands (PHP)</p>
+            <p className="text-center text-[10px] text-gray-400 absolute bottom-0 left-0 right-0">Stock Value in Thousands (PHP)</p>
           </div>
         </div>
       </div>
