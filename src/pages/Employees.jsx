@@ -213,7 +213,12 @@ export default function Employees() {
             </label>
           </div>
           
-          <div className="md:col-span-2 flex justify-end mt-4">
+          <div className="md:col-span-2 flex justify-between mt-4 border-t pt-4">
+            {editingId ? (
+              <button type="button" onClick={handleDelete} className="text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 px-4 py-2 rounded-lg flex items-center transition-colors">
+                <Trash2 className="w-4 h-4 mr-2" /> Delete
+              </button>
+            ) : <div></div>}
             <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center">
               {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (editingId ? 'Update Account' : 'Create Account')}
             </button>

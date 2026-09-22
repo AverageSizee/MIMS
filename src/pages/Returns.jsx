@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Plus, Loader2, Edit2 } from 'lucide-react';
+import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ColumnToggle from '../components/ColumnToggle';
 
@@ -148,8 +148,21 @@ export default function Returns() {
     }
   };
 
-  return (
-    <div className="space-y-6">
+  
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this record? This action cannot be undone.')) return;
+    try {
+      const { error } = await supabase.from('returns').delete().eq('id', editingId);
+      if (error) throw error;
+      setShowForm(false);
+      setEditingId(null);
+      fetchReturns();
+    } catch (error) {
+      alert('Error deleting record: ' + error.message);
+    }
+  };
+
+  return (<div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-medium text-gray-800">Return Records (Inbound)</h2>
         <button
@@ -228,7 +241,12 @@ export default function Returns() {
             <input required name="reason" value={formData.reason} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
 
-          <div className="md:col-span-2 flex justify-end mt-4">
+          <div className="md:col-span-2 flex justify-between mt-4 border-t pt-4">
+            {editingId ? (
+              <button type="button" onClick={handleDelete} className="text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 px-4 py-2 rounded-lg flex items-center transition-colors">
+                <Trash2 className="w-4 h-4 mr-2" /> Delete
+              </button>
+            ) : <div></div>}
             <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center">
               {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (editingId ? 'Update Return' : 'Save Return')}
             </button>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, Loader2, Edit2, MapPin } from 'lucide-react';
+import { Plus, Loader2, Edit2, MapPin , Trash2 } from 'lucide-react';
 import ColumnToggle from '../components/ColumnToggle';
 import CreatableSelect from 'react-select/creatable';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
@@ -149,8 +149,21 @@ export default function Suppliers() {
     window.scrollTo(0, 0);
   };
 
-  return (
-    <div className="space-y-6">
+  
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this record? This action cannot be undone.')) return;
+    try {
+      const { error } = await supabase.from('suppliers').delete().eq('id', editingId);
+      if (error) throw error;
+      setShowForm(false);
+      setEditingId(null);
+      fetchData();
+    } catch (error) {
+      alert('Error deleting record: ' + error.message);
+    }
+  };
+
+  return (<div className="space-y-6">
       <div className="flex justify-between items-center border-b pb-4">
         <h2 className="text-2xl font-bold text-gray-800 uppercase">Supplier Directory</h2>
         <button onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData({name:'', contact_person:'', contact_information:'', address:'', materials_supplied:''}); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700">
@@ -225,7 +238,12 @@ export default function Suppliers() {
               </div>
             </div>
           </div>
-          <div className="md:col-span-2 flex justify-end mt-2">
+          <div className="md:col-span-2 flex justify-between mt-2">
+            {editingId ? (
+              <button type="button" onClick={handleDelete} className="text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 px-4 py-2 rounded-lg flex items-center transition-colors">
+                <Trash2 className="w-4 h-4 mr-2" /> Delete
+              </button>
+            ) : <div></div>}
             <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center">
               {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (editingId ? 'Update Supplier' : 'Save Supplier')}
             </button>
