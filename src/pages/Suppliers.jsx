@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Loader2, Edit2, MapPin } from 'lucide-react';
 import ColumnToggle from '../components/ColumnToggle';
+import CreatableSelect from 'react-select/creatable';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -176,24 +177,31 @@ export default function Suppliers() {
           </div>
           
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Materials Supplied (Select from existing materials)</label>
-            <div className="flex flex-wrap gap-2 mt-1 p-2 border border-gray-200 rounded-md bg-gray-50 max-h-32 overflow-y-auto">
-              {availableMaterials.length === 0 ? (
-                <span className="text-gray-500 text-sm italic">No materials found. Add materials first.</span>
-              ) : (
-                availableMaterials.map(mat => {
-                  const isChecked = formData.materials_supplied.includes(mat);
-                  return (
-                    <label key={mat} className={`flex items-center space-x-2 px-3 py-1 rounded border cursor-pointer select-none transition-colors ${isChecked ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}>
-                      <input type="checkbox" className="hidden" checked={isChecked} onChange={() => handleMaterialToggle(mat)} />
-                      <span className="text-sm font-medium">{mat}</span>
-                    </label>
-                  )
+            <label className="block text-sm font-medium text-gray-700 mb-1">Materials Supplied</label>
+            <CreatableSelect
+              isMulti
+              name="materials_supplied"
+              options={availableMaterials.map(mat => ({ value: mat, label: mat }))}
+              value={
+                formData.materials_supplied
+                  ? formData.materials_supplied.split(', ').filter(Boolean).map(mat => ({ value: mat, label: mat }))
+                  : []
+              }
+              onChange={(selectedOptions) => {
+                const values = selectedOptions ? selectedOptions.map(opt => opt.value).join(', ') : '';
+                setFormData({ ...formData, materials_supplied: values });
+              }}
+              placeholder="Search and select materials, or type to add new..."
+              className="text-sm"
+              styles={{
+                control: (baseStyles) => ({
+                  ...baseStyles,
+                  borderColor: '#d1d5db',
+                  borderRadius: '0.375rem',
+                  padding: '1px'
                 })
-              )}
-            </div>
-            {/* Fallback manual input in case they want to type something custom */}
-            <input name="materials_supplied" value={formData.materials_supplied} onChange={handleInputChange} placeholder="Or type manually (e.g. Cement, Steel, Lumber)" className="w-full border border-gray-300 rounded-md p-2 mt-2 text-sm" />
+              }}
+            />
           </div>
 
           <div className="md:col-span-2">
