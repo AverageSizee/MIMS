@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Modal from '../components/Modal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Loader2, Edit2, MapPin , Trash2 } from 'lucide-react';
@@ -38,6 +39,8 @@ export default function Suppliers() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [locating, setLocating] = useState(false);
   
@@ -150,16 +153,25 @@ export default function Suppliers() {
   };
 
   
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this record? This action cannot be undone.')) return;
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleting(true);
     try {
       const { error } = await supabase.from('suppliers').delete().eq('id', editingId);
       if (error) throw error;
+      
+      setShowDeleteConfirm(false);
       setShowForm(false);
       setEditingId(null);
+      setFormData(initialFormState);
       fetchData();
     } catch (error) {
       alert('Error deleting record: ' + error.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -240,7 +252,7 @@ export default function Suppliers() {
               Cancel
             </button>
             {editingId && (
-              <button type="button" onClick={handleDelete} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
+              <button type="button" onClick={handleDeleteClick} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
                 <Trash2 className="w-4 h-4 mr-1" /> Delete
               </button>
             )}
@@ -337,6 +349,14 @@ export default function Suppliers() {
           </>
         )}
       </div>
+    
+      <ConfirmDeleteModal 
+        isOpen={showDeleteConfirm} 
+        onClose={() => setShowDeleteConfirm(false)} 
+        onConfirm={confirmDelete}
+        itemName={suppliers.find(m => m.id === editingId)?.name || 'this record'}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

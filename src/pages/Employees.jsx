@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
 import { createClient } from '@supabase/supabase-js';
 import { Loader2, ShieldCheck, User, Plus, X, Edit2, Trash2 } from 'lucide-react';
@@ -18,6 +19,8 @@ export default function Employees() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
   const initialFormState = {
@@ -214,7 +217,7 @@ export default function Employees() {
               Cancel
             </button>
             {editingId && (
-              <button type="button" onClick={handleDelete} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
+              <button type="button" onClick={handleDeleteClick} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
                 <Trash2 className="w-4 h-4 mr-1" /> Delete
               </button>
             )}
@@ -326,6 +329,14 @@ export default function Employees() {
           </>
         )}
       </div>
+    
+      <ConfirmDeleteModal 
+        isOpen={showDeleteConfirm} 
+        onClose={() => setShowDeleteConfirm(false)} 
+        onConfirm={confirmDelete}
+        itemName={employees.find(m => m.id === editingId)?.full_name || 'this record'}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

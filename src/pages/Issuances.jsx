@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
 import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,6 +13,8 @@ export default function Issuances() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
   // Column management
@@ -136,16 +139,25 @@ export default function Issuances() {
   };
 
   
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this record? This action cannot be undone.')) return;
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleting(true);
     try {
       const { error } = await supabase.from('issuances').delete().eq('id', editingId);
       if (error) throw error;
+      
+      setShowDeleteConfirm(false);
       setShowForm(false);
       setEditingId(null);
+      setFormData(initialFormState);
       fetchIssuances();
     } catch (error) {
       alert('Error deleting record: ' + error.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -220,7 +232,7 @@ export default function Issuances() {
               Cancel
             </button>
             {editingId && (
-              <button type="button" onClick={handleDelete} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
+              <button type="button" onClick={handleDeleteClick} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
                 <Trash2 className="w-4 h-4 mr-1" /> Delete
               </button>
             )}
@@ -347,6 +359,14 @@ export default function Issuances() {
           </>
         )}
       </div>
+    
+      <ConfirmDeleteModal 
+        isOpen={showDeleteConfirm} 
+        onClose={() => setShowDeleteConfirm(false)} 
+        onConfirm={confirmDelete}
+        itemName={issuances.find(m => m.id === editingId)?.issuance_id || 'this record'}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

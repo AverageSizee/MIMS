@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
 import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +12,9 @@ export default function Materials() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [affectedSuppliers, setAffectedSuppliers] = useState([]);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
   // Column management
@@ -114,16 +118,47 @@ export default function Materials() {
   };
 
   
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this record? This action cannot be undone.')) return;
+  const handleDeleteClick = async () => {
+    const mat = materials.find(m => m.id === editingId);
+    if (!mat) return;
     try {
+      const { data: allSuppliers } = await supabase.from('suppliers').select('id, name, materials_supplied');
+      if (allSuppliers) {
+        const affected = allSuppliers.filter(s => s.materials_supplied && s.materials_supplied.split(', ').includes(mat.name));
+        setAffectedSuppliers(affected);
+      } else {
+        setAffectedSuppliers([]);
+      }
+      setShowDeleteConfirm(true);
+    } catch (error) {
+      console.error(error);
+      setShowDeleteConfirm(true);
+    }
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const mat = materials.find(m => m.id === editingId);
+      if (mat) {
+        for (const supp of affectedSuppliers) {
+          const newMats = supp.materials_supplied.split(', ').filter(m => m !== mat.name).join(', ');
+          await supabase.from('suppliers').update({ materials_supplied: newMats }).eq('id', supp.id);
+        }
+      }
+
       const { error } = await supabase.from('materials').delete().eq('id', editingId);
       if (error) throw error;
+      
+      setShowDeleteConfirm(false);
       setShowForm(false);
       setEditingId(null);
+      setFormData(initialFormState);
       fetchMaterials();
     } catch (error) {
       alert('Error deleting record: ' + error.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -181,7 +216,7 @@ export default function Materials() {
               Cancel
             </button>
             {editingId && (
-              <button type="button" onClick={handleDelete} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
+              <button type="button" onClick={handleDeleteClick} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
                 <Trash2 className="w-4 h-4 mr-1" /> Delete
               </button>
             )}
@@ -283,6 +318,15 @@ export default function Materials() {
           </>
         )}
       </div>
+    
+      <ConfirmDeleteModal 
+        isOpen={showDeleteConfirm} 
+        onClose={() => setShowDeleteConfirm(false)} 
+        onConfirm={confirmDelete}
+        itemName={materials.find(m => m.id === editingId)?.name || 'this material'}
+        affectedItems={affectedSuppliers}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }
