@@ -159,6 +159,7 @@ export default function Deliveries() {
               setEditingId(null);
               setFormData(initialFormState);
             } else {
+              setFormData(initialFormState);
               setShowForm(true);
             }
           }}
@@ -169,7 +170,7 @@ export default function Deliveries() {
         </button>
       </div>
 
-      <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
+      <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -216,7 +217,7 @@ export default function Deliveries() {
           </div>
 
           <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
-            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
+            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
               Cancel
             </button>
             {editingId && (
