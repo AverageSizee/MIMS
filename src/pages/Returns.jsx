@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Modal from '../components/Modal';
 import { supabase } from '../lib/supabase';
 import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -182,11 +183,8 @@ export default function Returns() {
         </button>
       </div>
 
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="md:col-span-2 pb-2 border-b border-gray-100 mb-2">
-            <h3 className="font-semibold text-gray-700">{editingId ? 'Edit Return' : 'Record New Return'}</h3>
-          </div>
+      <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input required type="date" name="return_date" value={formData.return_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
@@ -241,18 +239,21 @@ export default function Returns() {
             <input required name="reason" value={formData.reason} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
 
-          <div className="md:col-span-2 flex justify-between mt-4 border-t pt-4">
-            {editingId ? (
-              <button type="button" onClick={handleDelete} className="text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 px-4 py-2 rounded-lg flex items-center transition-colors">
-                <Trash2 className="w-4 h-4 mr-2" /> Delete
+          <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
+              Cancel
+            </button>
+            {editingId && (
+              <button type="button" onClick={handleDelete} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
+                <Trash2 className="w-4 h-4 mr-1" /> Delete
               </button>
-            ) : <div></div>}
-            <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+            )}
+            <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center font-medium text-sm transition-colors">
               {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (editingId ? 'Update Return' : 'Save Return')}
             </button>
           </div>
         </form>
-      )}
+      </Modal>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="flex justify-end p-2 border-b border-gray-50">
