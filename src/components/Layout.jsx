@@ -28,12 +28,10 @@ export default function Layout() {
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       
       {/* Mobile Sidebar Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-gray-900 bg-opacity-50 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        ></div>
-      )}
+      <div 
+        className={`fixed top-0 left-0 w-full h-[100dvh] z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
 
       {/* Sidebar */}
       <div className={`
