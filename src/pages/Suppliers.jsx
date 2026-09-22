@@ -116,9 +116,19 @@ export default function Suppliers() {
         }).eq('id', editingId);
         if (error) throw error;
       } else {
-        const countRes = await supabase.from('suppliers').select('id', { count: 'exact' });
-        const newCount = (countRes.count || 0) + 1;
-        const generatedId = `SUP-${String(newCount).padStart(3, '0')}`;
+        let nextNum = 1;
+        const { data: latestSupplier } = await supabase.from('suppliers')
+          .select('supplier_id')
+          .order('supplier_id', { ascending: false })
+          .limit(1);
+          
+        if (latestSupplier && latestSupplier.length > 0 && latestSupplier[0].supplier_id) {
+          const match = latestSupplier[0].supplier_id.match(/SUP-(\d+)/);
+          if (match) {
+            nextNum = parseInt(match[1], 10) + 1;
+          }
+        }
+        const generatedId = `SUP-${String(nextNum).padStart(3, '0')}`;
         
         const { error } = await supabase.from('suppliers').insert([{
           ...formData,
