@@ -34,7 +34,7 @@ export default function Issuances() {
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(['id','date','site','material','quantity','cost','requested','released','purpose']);
+  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
 
   const initialFormState = {
     project_site: '',
@@ -59,7 +59,7 @@ export default function Issuances() {
     setLoading(true);
     try {
       const [issRes, matRes] = await Promise.all([
-        supabase.from('issuances').select('*, materials(material_description), creator:profiles!issuances_created_by_fkey(full_name), updater:profiles!issuances_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
+        supabase.from('issuances').select('*, materials(material_description)').order('created_at', { ascending: false }),
         supabase.from('materials').select('id, material_description, unit_cost')
       ]);
       

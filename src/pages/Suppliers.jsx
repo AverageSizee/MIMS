@@ -56,19 +56,19 @@ export default function Suppliers() {
     { id: 'materials', label: 'Primary Materials Supplied' }
   ];
   
-  const [visibleColumns, setVisibleColumns] = useState(['id', 'name', 'contact_person', 'contact_info', 'supplies']);
+  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
 
   async function fetchData() {
     try {
       const [suppRes, matRes] = await Promise.all([
-        supabase.from('suppliers').select(`*, creator:created_by(full_name), updater:updated_by(full_name)`).order('created_at', { ascending: false }),
+        supabase.from('suppliers').select('*').order('created_at', { ascending: false }),
         supabase.from('materials').select('material_description').order('material_description')
       ]);
       if (suppRes.error) throw suppRes.error;
       if (matRes.error) throw matRes.error;
       
       setSuppliers(suppRes.data || []);
-      setAvailableMaterials((matRes.data || []).map(m => m.name));
+      setAvailableMaterials((matRes.data || []).map(m => m.material_description));
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {

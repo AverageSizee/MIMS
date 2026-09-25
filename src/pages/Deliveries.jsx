@@ -34,7 +34,7 @@ export default function Deliveries() {
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(['id','po_no','date','supplier','material','quantity','cost','received_by']);
+  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
 
   const initialFormState = {
     po_no: '',
@@ -57,7 +57,7 @@ export default function Deliveries() {
     setLoading(true);
     try {
       const [delRes, matRes, supRes] = await Promise.all([
-        supabase.from('deliveries').select('*, materials(material_description), suppliers(supplier_name), creator:profiles!deliveries_created_by_fkey(full_name), updater:profiles!deliveries_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
+        supabase.from('deliveries').select('*, materials(material_description), suppliers(supplier_name)').order('created_at', { ascending: false }),
         supabase.from('materials').select('id, material_description, unit_cost'),
         supabase.from('suppliers').select('id, supplier_name')
       ]);

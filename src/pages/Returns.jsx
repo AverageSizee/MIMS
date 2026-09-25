@@ -34,7 +34,7 @@ export default function Returns() {
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(['id','date','site','material','quantity','cost','returned','received','reason_condition']);
+  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
 
   const initialFormState = {
     return_date: new Date().toISOString().split('T')[0],
@@ -55,7 +55,7 @@ export default function Returns() {
     setLoading(true);
     try {
       const [retRes, matRes] = await Promise.all([
-        supabase.from('returns').select('*, materials(material_description), creator:profiles!returns_created_by_fkey(full_name), updater:profiles!returns_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
+        supabase.from('returns').select('*, materials(material_description)').order('created_at', { ascending: false }),
         supabase.from('materials').select('id, material_description, unit_cost')
       ]);
       

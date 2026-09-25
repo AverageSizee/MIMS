@@ -33,7 +33,7 @@ export default function Materials() {
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(['id','name','category','unit','cost','levels','stock','status']);
+  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
 
   const initialFormState = {
     material_description: '', category: '', unit: '',
