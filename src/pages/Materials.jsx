@@ -65,12 +65,12 @@ export default function Materials() {
 
   const handleEdit = (material) => {
     setFormData({
-      name: material.name,
+      material_description: material.material_description || '',
       category: material.category || '',
-      unit_of_measurement: material.unit_of_measurement || '',
+      unit: material.unit || '',
       unit_cost: material.unit_cost || '',
-      min_reorder_level: material.min_reorder_level || '',
-      max_stock_level: material.max_stock_level || ''
+      reorder_level: material.reorder_level || '',
+      target_level: material.target_level || ''
     });
     setEditingId(material.id);
     setShowForm(true);
