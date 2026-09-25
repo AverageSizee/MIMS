@@ -247,6 +247,13 @@ export default function Materials() {
           <Plus className="w-4 h-4 mr-2" />
           {showForm ? 'Cancel' : 'Add Material'}
         </button>
+        <button
+          onClick={() => setShowQRSheet(true)}
+          title="Print QR shelf labels for all materials"
+          className="bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-900 transition-colors text-sm font-medium"
+        >
+          🏷️ Print QR Labels
+        </button>
       </div>
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
