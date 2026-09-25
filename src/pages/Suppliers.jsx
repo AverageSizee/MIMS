@@ -48,6 +48,7 @@ export default function Suppliers() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [extraWarnings, setExtraWarnings] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [locating, setLocating] = useState(false);
@@ -192,7 +193,16 @@ export default function Suppliers() {
   };
 
   
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
+    try {
+      let warnings = [];
+      const { count: delCount } = await supabase.from('deliveries').select('id', { count: 'exact', head: true }).eq('supplier_id', editingId);
+      if (delCount > 0) warnings.push(`Deliveries (${delCount} records)`);
+      
+      setExtraWarnings(warnings);
+    } catch (err) {
+      console.error(err);
+    }
     setShowDeleteConfirm(true);
   };
 
@@ -433,6 +443,7 @@ export default function Suppliers() {
         onClose={() => setShowDeleteConfirm(false)} 
         onConfirm={confirmDelete}
         itemName={suppliers.find(m => m.id === editingId)?.supplier_name || 'this record'}
+        extraWarnings={extraWarnings}
         isDeleting={isDeleting}
       />
     </div>

@@ -15,6 +15,7 @@ export default function Materials() {
   const [submitting, setSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [affectedSuppliers, setAffectedSuppliers] = useState([]);
+  const [extraWarnings, setExtraWarnings] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
@@ -138,6 +139,7 @@ export default function Materials() {
     const mat = materials.find(m => m.id === editingId);
     if (!mat) return;
     try {
+      // 1. Check Suppliers
       const { data: allSuppliers } = await supabase.from('suppliers').select('id, supplier_name, primary_materials_supplied');
       if (allSuppliers) {
         const affected = allSuppliers.filter(s => s.primary_materials_supplied && s.primary_materials_supplied.split(', ').includes(mat.material_description));
@@ -145,6 +147,19 @@ export default function Materials() {
       } else {
         setAffectedSuppliers([]);
       }
+      
+      // 2. Check other tables for references
+      let warnings = [];
+      const { count: delCount } = await supabase.from('deliveries').select('id', { count: 'exact', head: true }).eq('material_id', mat.id);
+      if (delCount > 0) warnings.push(`Deliveries (${delCount} records)`);
+      
+      const { count: issCount } = await supabase.from('issuances').select('id', { count: 'exact', head: true }).eq('material_id', mat.id);
+      if (issCount > 0) warnings.push(`Issuances (${issCount} records)`);
+      
+      const { count: retCount } = await supabase.from('returns').select('id', { count: 'exact', head: true }).eq('material_id', mat.id);
+      if (retCount > 0) warnings.push(`Returns (${retCount} records)`);
+      
+      setExtraWarnings(warnings);
       setShowDeleteConfirm(true);
     } catch (error) {
       console.error(error);
@@ -444,6 +459,7 @@ export default function Materials() {
         onConfirm={confirmDelete}
         itemName={materials.find(m => m.id === editingId)?.material_description || 'this material'}
         affectedItems={affectedSuppliers}
+        extraWarnings={extraWarnings}
         isDeleting={isDeleting}
       />
     
