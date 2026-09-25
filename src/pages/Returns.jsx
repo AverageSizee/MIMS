@@ -46,7 +46,7 @@ export default function Returns() {
     material_id: '',
     quantity: '',
     returned_by: '',
-    received_by: '',
+    received_by: 'Storekeeper',
     reason_condition: ''
   };
   const [formData, setFormData] = useState(initialFormState);

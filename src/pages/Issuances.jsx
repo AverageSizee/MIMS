@@ -46,7 +46,7 @@ export default function Issuances() {
     material_id: '',
     quantity: '',
     requested_by: '',
-    released_by: '',
+    released_by: 'Storekeeper',
     purpose: ''
   };
   const [formData, setFormData] = useState(initialFormState);
