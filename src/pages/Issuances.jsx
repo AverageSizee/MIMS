@@ -300,7 +300,7 @@ export default function Issuances() {
                         {visibleColumns.includes('site') && <td className="px-6 py-4">{i.project_site}</td>}
                         {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{i.materials?.material_description}</td>}
                         {visibleColumns.includes('quantity') && <td className="px-6 py-4 font-medium text-amber-600">-{i.quantity}</td>}
-                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">\u20B1{Number(i.total_cost).toFixed(2)}</td>}
+                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(i.total_cost).toFixed(2)}</td>}
                         {visibleColumns.includes('requested') && <td className="px-6 py-4 text-gray-500">{i.requested_by}</td>}
                         {visibleColumns.includes('released') && <td className="px-6 py-4 text-gray-500">{i.released_by}</td>}
                         {visibleColumns.includes('purpose') && <td className="px-6 py-4 text-gray-500">{i.purpose}</td>}

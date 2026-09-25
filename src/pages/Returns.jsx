@@ -313,7 +313,7 @@ export default function Returns() {
                         {visibleColumns.includes('site') && <td className="px-6 py-4">{r.project_site}</td>}
                         {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{r.materials?.material_description}</td>}
                         {visibleColumns.includes('quantity') && <td className="px-6 py-4 font-medium text-green-600">+{r.quantity}</td>}
-                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">\u20B1{Number(r.total_cost).toFixed(2)}</td>}
+                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(r.total_cost).toFixed(2)}</td>}
                         {visibleColumns.includes('returned') && <td className="px-6 py-4 text-gray-500">{r.returned_by}</td>}
                         {visibleColumns.includes('received') && <td className="px-6 py-4 text-gray-500">{r.received_by}</td>}
                         {visibleColumns.includes('reason_condition') && <td className="px-6 py-4 text-gray-500">{r.reason_condition}</td>}

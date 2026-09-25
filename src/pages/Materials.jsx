@@ -23,7 +23,7 @@ export default function Materials() {
     { id: 'name', label: 'Material Description' },
     { id: 'category', label: 'Category' },
     { id: 'unit', label: 'Unit' },
-    { id: 'cost', label: 'Unit Cost (\u20B1)' },
+    { id: 'cost', label: 'Unit Cost (₱)' },
     { id: 'levels', label: 'Reorder / Target' },
     { id: 'stock', label: 'Stock Balance' },
     { id: 'status', label: 'Status' }
@@ -244,7 +244,7 @@ export default function Materials() {
                       {visibleColumns.includes('name') && <th className="px-6 py-3 font-medium">Material Description</th>}
                       {visibleColumns.includes('category') && <th className="px-6 py-3 font-medium">Category</th>}
                       {visibleColumns.includes('unit') && <th className="px-6 py-3 font-medium">Unit</th>}
-                      {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Unit Cost (\u20B1)</th>}
+                      {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Unit Cost (₱)</th>}
                       {visibleColumns.includes('levels') && <th className="px-6 py-3 font-medium">Reorder / Target</th>}
                       {visibleColumns.includes('stock') && <th className="px-6 py-3 font-medium">Stock Balance</th>}
                       {visibleColumns.includes('status') && <th className="px-6 py-3 font-medium">Status</th>}
@@ -258,7 +258,7 @@ export default function Materials() {
                         {visibleColumns.includes('name') && <td className="px-6 py-4">{m.material_description}</td>}
                         {visibleColumns.includes('category') && <td className="px-6 py-4 text-gray-600">{m.category}</td>}
                         {visibleColumns.includes('unit') && <td className="px-6 py-4">{m.unit}</td>}
-                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-medium">\u20B1{Number(m.unit_cost).toFixed(2)}</td>}
+                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-medium">₱{Number(m.unit_cost).toFixed(2)}</td>}
                         {visibleColumns.includes('levels') && <td className="px-6 py-4 text-gray-500">{m.reorder_level} / {m.target_level}</td>}
                         {visibleColumns.includes('stock') && <td className="px-6 py-4 font-bold text-gray-900">{m.stock_balance || 0}</td>}
                         {visibleColumns.includes('status') && <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-xs font-bold ${m.status === 'NORMAL' ? 'bg-green-100 text-green-700' : m.status === 'REORDER' ? 'bg-amber-100 text-amber-700' : m.status === 'OUT OF STOCK' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>{m.status || 'NORMAL'}</span></td>}
@@ -297,7 +297,7 @@ export default function Materials() {
                       <div><p className="text-xs text-gray-500">UoM</p><p className="font-medium text-gray-800">{m.unit}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (
-                        <div><p className="text-xs text-gray-500">Unit Cost</p><p className="font-medium text-gray-800">\u20B1{Number(m.unit_cost).toFixed(2)}</p></div>
+                        <div><p className="text-xs text-gray-500">Unit Cost</p><p className="font-medium text-gray-800">₱{Number(m.unit_cost).toFixed(2)}</p></div>
                       )}
                       {visibleColumns.includes('stock') && (
                         <div><p className="text-xs text-gray-500">Stock Balance</p><p className="font-bold text-gray-900">{m.stock_balance || 0}</p></div>
