@@ -21,11 +21,19 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-function LocationMarker({ onLocationSelected }) {
-  const [position, setPosition] = useState(null);
+import { useMap } from 'react-leaflet';
+function MapUpdater({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) map.flyTo(center, 13);
+  }, [center, map]);
+  return null;
+}
+
+function LocationMarker({ onLocationSelected, position, setPosition }) {
   useMapEvents({
     click(e) {
-      setPosition(e.latlng);
+      setPosition([e.latlng.lat, e.latlng.lng]);
       onLocationSelected(e.latlng.lat, e.latlng.lng);
     },
   });
@@ -90,7 +98,7 @@ export default function Suppliers() {
     } else {
       currentMats.push(matName);
     }
-    setFormData({ ...formData, materials_supplied: currentMats.join(', ') });
+    setFormData({ ...formData, primary_materials_supplied: currentMats.join(', ') });
   };
 
   const handleLocationSelected = async (lat, lng) => {
@@ -99,7 +107,7 @@ export default function Suppliers() {
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
       const data = await res.json();
       if (data && data.display_name) {
-        setFormData(prev => ({ ...prev, address: data.display_name }));
+        setFormData(prev => ({ ...prev, address_location: data.display_name }));
       }
     } catch (err) {
       console.error("Geocoding error", err);
@@ -151,6 +159,22 @@ export default function Suppliers() {
     }
   };
 
+  
+  const [mapPosition, setMapPosition] = useState(null);
+
+  const geocodeAddress = async (address) => {
+    if (!address) return;
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        setMapPosition([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+      }
+    } catch (err) {
+      console.error("Forward geocoding error", err);
+    }
+  };
+
   const handleEdit = (supplier) => {
     setFormData({
       supplier_name: supplier.supplier_name,
@@ -160,6 +184,9 @@ export default function Suppliers() {
       primary_materials_supplied: supplier.primary_materials_supplied || ''
     });
     setEditingId(supplier.id);
+    if (supplier.address_location) {
+      geocodeAddress(supplier.address_location);
+    }
     setShowForm(true);
     window.scrollTo(0, 0);
   };
@@ -265,7 +292,8 @@ export default function Suppliers() {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <LocationMarker onLocationSelected={handleLocationSelected} />
+                <MapUpdater center={mapPosition} />
+                  <LocationMarker onLocationSelected={handleLocationSelected} position={mapPosition} setPosition={setMapPosition} />
               </MapContainer>
               <div className="absolute bottom-2 left-2 z-[400] bg-white/90 px-2 py-1 rounded shadow text-xs font-semibold text-gray-700 pointer-events-none flex items-center">
                 <MapPin className="w-3 h-3 mr-1 text-red-500" /> Click anywhere on map to auto-fill address
