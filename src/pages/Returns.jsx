@@ -193,9 +193,9 @@ export default function Returns() {
   // Filtering & Pagination Logic
   const itemsPerPage = 20;
   
-  const uniqueSites = ['All', ...new Set(returnsData.map(r => r.project_site).filter(Boolean))];
+  const uniqueSites = ['All', ...new Set(returns.map(r => r.project_site).filter(Boolean))];
   
-  const filteredData = returnsData.filter(r => {
+  const filteredData = returns.filter(r => {
     const matchesSearch = Object.values(r).some(val => 
       val && typeof val !== 'object' && val.toString().toLowerCase().includes(searchTerm.toLowerCase())
     ) || (r.materials && r.materials.material_description && r.materials.material_description.toLowerCase().includes(searchTerm.toLowerCase()));
