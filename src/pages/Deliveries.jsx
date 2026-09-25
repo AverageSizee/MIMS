@@ -280,7 +280,7 @@ export default function Deliveries() {
                       {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{d.materials?.name}</td>}
                       {visibleColumns.includes('supplier') && <td className="px-6 py-4 text-gray-600">{d.suppliers?.name}</td>}
                       {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium">{d.quantity_delivered}</td>}
-                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">${Number(d.total_cost).toFixed(2)}</td>}
+                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(d.total_cost).toFixed(2)}</td>}
                       {visibleColumns.includes('po') && (
                         <td className="px-6 py-4 text-gray-600">
                           <div>{d.purchase_order_number}</div>
@@ -331,7 +331,7 @@ export default function Deliveries() {
                       <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-gray-800">{d.quantity_delivered}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (
-                      <div><p className="text-xs text-gray-500">Total Cost</p><p className="font-medium text-gray-800">${Number(d.total_cost).toFixed(2)}</p></div>
+                      <div><p className="text-xs text-gray-500">Total Cost</p><p className="font-medium text-gray-800">₱{Number(d.total_cost).toFixed(2)}</p></div>
                     )}
                     {visibleColumns.includes('po') && (
                       <div><p className="text-xs text-gray-500">PO Number</p><p className="font-medium text-gray-800">{d.purchase_order_number}</p></div>

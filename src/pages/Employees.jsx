@@ -22,6 +22,7 @@ export default function Employees() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   const initialFormState = {
     email: '',
@@ -70,25 +71,37 @@ export default function Employees() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (targetId, name) => {
-    if (targetId === user.id) {
+  const handleDeleteClick = (targetId) => {
+    // If called without arguments (e.g. from the form), use editingId
+    const idToDelete = (targetId && typeof targetId === 'string') ? targetId : editingId;
+    if (idToDelete === user.id) {
       alert("You cannot delete your own account!");
       return;
     }
-    if (!window.confirm(`Are you sure you want to completely delete ${name}'s account? This action cannot be undone.`)) {
-      return;
-    }
-    
-    setLoading(true);
+    setDeleteTargetId(idToDelete);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    setIsDeleting(true);
     try {
-      // Call the secure Postgres function we created in SQL
-      const { error } = await supabase.rpc('delete_user_account', { target_user_id: targetId });
+      const { error } = await supabase.rpc('delete_user_account', { target_user_id: deleteTargetId });
       if (error) throw error;
+      
+      setShowDeleteConfirm(false);
+      
+      if (deleteTargetId === editingId) {
+        setShowForm(false);
+        setEditingId(null);
+        setFormData(initialFormState);
+      }
+      setDeleteTargetId(null);
       fetchEmployees();
     } catch (err) {
       console.error('Error deleting user:', err.message);
       alert('Error deleting user: ' + err.message);
-      setLoading(false);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -274,7 +287,7 @@ export default function Employees() {
                           <Edit2 className="w-4 h-4" />
                         </button>
                         {user.id !== emp.id && (
-                          <button onClick={() => handleDelete(emp.id, emp.full_name)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                          <button onClick={() => handleDeleteClick(emp.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
@@ -304,7 +317,7 @@ export default function Employees() {
                         <Edit2 className="w-4 h-4" />
                       </button>
                       {user.id !== emp.id && (
-                        <button onClick={() => handleDelete(emp.id, emp.full_name)} className="p-2 text-red-600 bg-red-50 rounded-lg">
+                        <button onClick={() => handleDeleteClick(emp.id)} className="p-2 text-red-600 bg-red-50 rounded-lg">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
@@ -332,9 +345,9 @@ export default function Employees() {
     
       <ConfirmDeleteModal 
         isOpen={showDeleteConfirm} 
-        onClose={() => setShowDeleteConfirm(false)} 
+        onClose={() => { setShowDeleteConfirm(false); setDeleteTargetId(null); }} 
         onConfirm={confirmDelete}
-        itemName={employees.find(m => m.id === editingId)?.full_name || 'this record'}
+        itemName={employees.find(m => m.id === deleteTargetId)?.full_name || 'this record'}
         isDeleting={isDeleting}
       />
     </div>

@@ -258,7 +258,7 @@ export default function Materials() {
                       {visibleColumns.includes('name') && <td className="px-6 py-4">{m.name}</td>}
                       {visibleColumns.includes('category') && <td className="px-6 py-4 text-gray-600">{m.category}</td>}
                       {visibleColumns.includes('uom') && <td className="px-6 py-4">{m.unit_of_measurement}</td>}
-                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-medium">${Number(m.unit_cost).toFixed(2)}</td>}
+                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-medium">₱{Number(m.unit_cost).toFixed(2)}</td>}
                       {visibleColumns.includes('levels') && <td className="px-6 py-4 text-gray-500">{m.min_reorder_level} / {m.max_stock_level}</td>}
                       {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{m.creator?.full_name || 'System'}</td>}
                       {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{m.updater?.full_name || '-'}</td>}
@@ -297,7 +297,7 @@ export default function Materials() {
                       <div><p className="text-xs text-gray-500">UoM</p><p className="font-medium text-gray-800">{m.unit_of_measurement}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (
-                      <div><p className="text-xs text-gray-500">Unit Cost</p><p className="font-medium text-gray-800">${Number(m.unit_cost).toFixed(2)}</p></div>
+                      <div><p className="text-xs text-gray-500">Unit Cost</p><p className="font-medium text-gray-800">₱{Number(m.unit_cost).toFixed(2)}</p></div>
                     )}
                     {visibleColumns.includes('levels') && (
                       <div><p className="text-xs text-gray-500">Min/Max</p><p className="font-medium text-gray-800">{m.min_reorder_level} / {m.max_stock_level}</p></div>

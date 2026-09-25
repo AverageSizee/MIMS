@@ -278,7 +278,7 @@ export default function Issuances() {
                       )}
                       {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{i.materials?.name}</td>}
                       {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-red-600">-{i.quantity_issued}</td>}
-                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">${Number(i.total_cost).toFixed(2)}</td>}
+                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(i.total_cost).toFixed(2)}</td>}
                       {visibleColumns.includes('project_site') && (
                         <td className="px-6 py-4 text-gray-600">
                           <div>{i.project_site}</div>
@@ -332,7 +332,7 @@ export default function Issuances() {
                       <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-red-600">-{i.quantity_issued}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (
-                      <div><p className="text-xs text-gray-500">Total Cost</p><p className="font-medium text-gray-800">${Number(i.total_cost).toFixed(2)}</p></div>
+                      <div><p className="text-xs text-gray-500">Total Cost</p><p className="font-medium text-gray-800">₱{Number(i.total_cost).toFixed(2)}</p></div>
                     )}
                     {visibleColumns.includes('project_site') && (
                       <div className="col-span-2"><p className="text-xs text-gray-500">Project / Site (Purpose)</p><p className="font-medium text-gray-800">{i.project_site}</p><p className="text-xs text-gray-500">{i.purpose}</p></div>
