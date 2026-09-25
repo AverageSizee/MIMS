@@ -1,68 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
-import { X, Camera, AlertCircle } from 'lucide-react';
+import { Scanner } from '@yudiel/react-qr-scanner';
+import { X, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
 import Modal from './Modal';
 
-export default function QRScanner({ isOpen, onClose, onScanned, title = "Scan Material QR Code" }) {
-  const scannerRef = useRef(null);
+export default function QRScanner({ isOpen, onClose, onScanned }) {
   const [error, setError] = useState('');
-  const [scanning, setScanning] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    let html5QrCode = null;
-
-    const startScanner = async () => {
-      setError('');
-      setScanning(true);
-      try {
-        html5QrCode = new Html5Qrcode('qr-reader');
-        scannerRef.current = html5QrCode;
-
-        await html5QrCode.start(
-          { facingMode: 'environment' },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            // Success - got a scan
-            onScanned(decodedText);
-            stopScanner(html5QrCode);
-            onClose();
-          },
-          () => {} // suppress error noise
-        );
-      } catch (err) {
-        setError('Could not access camera. Please allow camera permission and try again.');
-        setScanning(false);
+  const handleScan = (results) => {
+    if (results && results.length > 0) {
+      const text = results[0].rawValue;
+      if (text) {
+        onScanned(text);
+        onClose();
       }
-    };
-
-    const timer = setTimeout(startScanner, 300);
-    return () => {
-      clearTimeout(timer);
-      if (scannerRef.current) {
-        stopScanner(scannerRef.current);
-      }
-    };
-  }, [isOpen]);
-
-  const stopScanner = async (instance) => {
-    try {
-      if (instance && instance.isScanning) {
-        await instance.stop();
-        await instance.clear();
-      }
-    } catch (_) {}
-    setScanning(false);
+    }
   };
 
-  const handleClose = () => {
-    if (scannerRef.current) stopScanner(scannerRef.current);
-    onClose();
+  const handleError = (err) => {
+    console.error(err);
+    setError('Could not access camera. Please allow camera permission and try again.');
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={title}>
+    <Modal isOpen={isOpen} onClose={onClose} title="Scan Material QR Code">
       <div className="flex flex-col items-center gap-4">
         <p className="text-sm text-gray-500 text-center">
           Point your camera at the QR label on the storage shelf to auto-fill the material.
@@ -73,27 +33,25 @@ export default function QRScanner({ isOpen, onClose, onScanned, title = "Scan Ma
             <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
             <p className="text-sm text-red-700">{error}</p>
           </div>
-        ) : (
-          <div className="w-full relative">
-            <div
-              id="qr-reader"
-              className="w-full rounded-lg overflow-hidden bg-black"
-              style={{ minHeight: '280px' }}
+        ) : isOpen ? (
+          <div className="w-full rounded-lg overflow-hidden border border-gray-200">
+            <Scanner
+              onScan={handleScan}
+              onError={handleError}
+              constraints={{ facingMode: 'environment' }}
+              styles={{ container: { width: '100%', height: '280px' } }}
             />
-            {scanning && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="border-4 border-blue-400 rounded-lg opacity-60" style={{ width: 220, height: 220 }} />
-              </div>
-            )}
           </div>
-        )}
+        ) : null}
 
-        <div className="flex items-center gap-2 text-xs text-gray-400">
-          <Camera className="w-3 h-3" />
-          <span>Camera feed is active — align the QR code inside the box</span>
-        </div>
+        <p className="text-xs text-gray-400 flex items-center gap-1">
+          📷 Align the QR code label within the camera frame
+        </p>
 
-        <button onClick={handleClose} className="w-full px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium">
+        <button
+          onClick={onClose}
+          className="w-full px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
+        >
           Cancel
         </button>
       </div>
