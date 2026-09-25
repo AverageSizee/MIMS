@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Modal from '../components/Modal';
-import QRScanner from '../components/QRScanner';
+const QRScanner = React.lazy(() => import('../components/QRScanner'));
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
 import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
@@ -394,11 +394,11 @@ export default function Deliveries() {
         isDeleting={isDeleting}
       />
     
-    <QRScanner
+    <Suspense fallback={null}><QRScanner
       isOpen={showQRScanner}
       onClose={() => setShowQRScanner(false)}
       onScanned={handleQRScanned}
-    />
+    /></Suspense>
 </div>
   );
 }
