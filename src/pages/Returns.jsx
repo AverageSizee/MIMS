@@ -308,7 +308,7 @@ export default function Returns() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {returns.map((r) => (
+                    {paginatedData.map((r) => (
                       <tr key={r.id} className="hover:bg-gray-50">
                         {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{r.return_id}</td>}
                         {visibleColumns.includes('date') && <td className="px-6 py-4">{new Date(r.return_date).toLocaleDateString()}</td>}
@@ -350,7 +350,7 @@ export default function Returns() {
 
             {/* Mobile Card View */}
             <div className="md:hidden flex flex-col divide-y divide-gray-100">
-              {returns.map((r) => (
+              {paginatedData.map((r) => (
                 <div key={r.id} className="p-4 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
