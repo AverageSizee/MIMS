@@ -38,7 +38,9 @@ export default function Materials() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [activeSlicer, setActiveSlicer] = useState('All');
-  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
 
   const initialFormState = {
@@ -182,16 +184,17 @@ export default function Materials() {
   
   const uniqueCategories = ['All', ...categoriesList.map(c => c.name)];
   
-  const handleAddCategory = async () => {
-    const newCat = window.prompt('Enter new category name:');
-    if (!newCat || !newCat.trim()) return;
+  const submitNewCategory = async () => {
+    if (!newCategoryName.trim()) return;
     try {
-      const { error } = await supabase.from('categories').insert({ name: newCat.trim() });
+      const { error } = await supabase.from('categories').insert({ name: newCategoryName.trim() });
       if (error) {
         if (error.code === '23505') throw new Error('Category already exists.');
         throw error;
       }
-      setCategoriesList([...categoriesList, { name: newCat.trim() }].sort((a,b) => a.name.localeCompare(b.name)));
+      setCategoriesList([...categoriesList, { name: newCategoryName.trim() }].sort((a,b) => a.name.localeCompare(b.name)));
+      setShowAddCategoryModal(false);
+      setNewCategoryName('');
     } catch (err) {
       alert('Failed to add category: ' + err.message);
     }
@@ -297,16 +300,31 @@ export default function Materials() {
             <div className="flex items-center gap-4 flex-wrap">
                <input type="text" placeholder="Search materials..." value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} className="border border-gray-300 rounded-md p-1.5 text-sm w-64" />
                <div className="flex gap-1 flex-wrap items-center">
-                  {(showAllCategories ? uniqueCategories : uniqueCategories.slice(0, 6)).map(cat => (
+                  {uniqueCategories.slice(0, 6).map(cat => (
                      <button key={cat} onClick={() => {setActiveSlicer(cat); setCurrentPage(1);}} className={`px-3 py-1 text-xs rounded-full border transition-colors ${activeSlicer === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'}`}>{cat}</button>
                   ))}
-                  {uniqueCategories.length > 6 && !showAllCategories && (
-                     <button title="Show more categories" onClick={() => setShowAllCategories(true)} className="px-3 py-1 text-xs rounded-full border bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200">...</button>
+                  
+                  {uniqueCategories.length > 6 && (
+                     <div className="relative">
+                       <button title="Show more categories" onClick={() => setShowMoreMenu(!showMoreMenu)} className="px-3 py-1 flex items-center justify-center text-xs rounded-full border bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200">
+                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                           <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                         </svg>
+                       </button>
+                       {showMoreMenu && (
+                         <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 shadow-lg rounded-md py-1 z-50 min-w-max flex flex-col">
+                           {uniqueCategories.slice(6).map(cat => (
+                             <button key={cat} onClick={() => {setActiveSlicer(cat); setCurrentPage(1); setShowMoreMenu(false);}} className={`px-4 py-2 text-left text-sm hover:bg-gray-50 ${activeSlicer === cat ? 'font-bold text-blue-600' : 'text-gray-700'}`}>
+                               {cat}
+                             </button>
+                           ))}
+                         </div>
+                       )}
+                     </div>
                   )}
-                  {uniqueCategories.length > 6 && showAllCategories && (
-                     <button title="Show fewer categories" onClick={() => setShowAllCategories(false)} className="px-3 py-1 text-xs rounded-full border bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200">↑ Less</button>
-                  )}
-                  <button title="Add a new category" onClick={handleAddCategory} className="px-3 py-1 text-xs rounded-full border bg-green-50 text-green-700 border-green-200 hover:bg-green-100 font-bold leading-none">+</button>
+                  <button title="Add a new category" onClick={() => setShowAddCategoryModal(true)} className="px-3 py-1 flex items-center justify-center text-xs rounded-full border bg-green-50 text-green-700 border-green-200 hover:bg-green-100 font-bold leading-none h-6 w-8">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                  </button>
                </div>
             </div>
           <ColumnToggle columns={availableColumns} visibleColumns={visibleColumns} setVisibleColumns={setVisibleColumns} />
