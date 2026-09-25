@@ -55,8 +55,8 @@ export default function Returns() {
     setLoading(true);
     try {
       const [retRes, matRes] = await Promise.all([
-        supabase.from('returns').select('*, materials(name), creator:profiles!returns_created_by_fkey(full_name), updater:profiles!returns_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
-        supabase.from('materials').select('id, name, unit_cost')
+        supabase.from('returns').select('*, materials(material_description), creator:profiles!returns_created_by_fkey(full_name), updater:profiles!returns_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
+        supabase.from('materials').select('id, material_description, unit_cost')
       ]);
       
       setReturns(retRes.data || []);
@@ -351,7 +351,7 @@ export default function Returns() {
                   </div>
                   <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
                     {visibleColumns.includes('material') && (
-                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{r.materials?.name}</p></div>
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{r.materials?.material_description}</p></div>
                     )}
                     {visibleColumns.includes('qty') && (
                       <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-green-600">+{r.quantity}</p></div>

@@ -59,8 +59,8 @@ export default function Issuances() {
     setLoading(true);
     try {
       const [issRes, matRes] = await Promise.all([
-        supabase.from('issuances').select('*, materials(name), creator:profiles!issuances_created_by_fkey(full_name), updater:profiles!issuances_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
-        supabase.from('materials').select('id, name, unit_cost')
+        supabase.from('issuances').select('*, materials(material_description), creator:profiles!issuances_created_by_fkey(full_name), updater:profiles!issuances_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
+        supabase.from('materials').select('id, material_description, unit_cost')
       ]);
       
       setIssuances(issRes.data || []);
@@ -300,7 +300,7 @@ export default function Issuances() {
                           <div className="text-xs text-gray-500">{i.issuance_date}</div>
                         </td>
                       )}
-                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{i.materials?.name}</td>}
+                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{i.materials?.material_description}</td>}
                       {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-red-600">-{i.quantity_issued}</td>}
                       {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(i.total_cost).toFixed(2)}</td>}
                       {visibleColumns.includes('project_site') && (
@@ -350,7 +350,7 @@ export default function Issuances() {
                   </div>
                   <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
                     {visibleColumns.includes('material') && (
-                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{i.materials?.name}</p></div>
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{i.materials?.material_description}</p></div>
                     )}
                     {visibleColumns.includes('qty') && (
                       <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-red-600">-{i.quantity_issued}</p></div>

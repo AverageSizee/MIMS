@@ -57,9 +57,9 @@ export default function Deliveries() {
     setLoading(true);
     try {
       const [delRes, matRes, supRes] = await Promise.all([
-        supabase.from('deliveries').select('*, materials(name), suppliers(name), creator:profiles!deliveries_created_by_fkey(full_name), updater:profiles!deliveries_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
-        supabase.from('materials').select('id, name, unit_cost'),
-        supabase.from('suppliers').select('id, name')
+        supabase.from('deliveries').select('*, materials(material_description), suppliers(supplier_name), creator:profiles!deliveries_created_by_fkey(full_name), updater:profiles!deliveries_updated_by_fkey(full_name)').order('created_at', { ascending: false }),
+        supabase.from('materials').select('id, material_description, unit_cost'),
+        supabase.from('suppliers').select('id, supplier_name')
       ]);
       
       setDeliveries(delRes.data || []);
@@ -293,8 +293,8 @@ export default function Deliveries() {
                           <div className="text-xs text-gray-500">{d.delivery_date}</div>
                         </td>
                       )}
-                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{d.materials?.name}</td>}
-                      {visibleColumns.includes('supplier') && <td className="px-6 py-4 text-gray-600">{d.suppliers?.name}</td>}
+                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{d.materials?.material_description}</td>}
+                      {visibleColumns.includes('supplier') && <td className="px-6 py-4 text-gray-600">{d.suppliers?.supplier_name}</td>}
                       {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium">{d.quantity_delivered}</td>}
                       {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(d.total_cost).toFixed(2)}</td>}
                       {visibleColumns.includes('po') && (
@@ -338,10 +338,10 @@ export default function Deliveries() {
                   </div>
                   <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
                     {visibleColumns.includes('material') && (
-                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{d.materials?.name}</p></div>
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{d.materials?.material_description}</p></div>
                     )}
                     {visibleColumns.includes('supplier') && (
-                      <div className="col-span-2"><p className="text-xs text-gray-500">Supplier</p><p className="font-medium text-gray-800">{d.suppliers?.name}</p></div>
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Supplier</p><p className="font-medium text-gray-800">{d.suppliers?.supplier_name}</p></div>
                     )}
                     {visibleColumns.includes('qty') && (
                       <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-gray-800">{d.quantity_delivered}</p></div>

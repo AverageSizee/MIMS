@@ -48,9 +48,7 @@ export default function Materials() {
   async function fetchMaterials() {
     try {
       const { data, error } = await supabase
-        .from('materials')
-        .select('*, creator:profiles!materials_created_by_fkey(full_name), updater:profiles!materials_updated_by_fkey(full_name)')
-        .order('created_at', { ascending: false });
+        .from('inventory_dashboard').select('*').order('material_description');
       
       if (error) throw error;
       setMaterials(data || []);
@@ -124,9 +122,9 @@ export default function Materials() {
     const mat = materials.find(m => m.id === editingId);
     if (!mat) return;
     try {
-      const { data: allSuppliers } = await supabase.from('suppliers').select('id, name, materials_supplied');
+      const { data: allSuppliers } = await supabase.from('suppliers').select('id, supplier_name, primary_materials_supplied');
       if (allSuppliers) {
-        const affected = allSuppliers.filter(s => s.materials_supplied && s.materials_supplied.split(', ').includes(mat.material_description));
+        const affected = allSuppliers.filter(s => s.primary_materials_supplied && s.primary_materials_supplied.split(', ').includes(mat.material_description));
         setAffectedSuppliers(affected);
       } else {
         setAffectedSuppliers([]);
@@ -144,8 +142,8 @@ export default function Materials() {
       const mat = materials.find(m => m.id === editingId);
       if (mat) {
         for (const supp of affectedSuppliers) {
-          const newMats = supp.materials_supplied.split(', ').filter(m => m !== mat.material_description).join(', ');
-          await supabase.from('suppliers').update({ materials_supplied: newMats }).eq('id', supp.id);
+          const newMats = supp.primary_materials_supplied.split(', ').filter(m => m !== mat.material_description).join(', ');
+          await supabase.from('suppliers').update({ primary_materials_supplied: newMats }).eq('id', supp.id);
         }
       }
 

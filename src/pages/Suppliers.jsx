@@ -62,7 +62,7 @@ export default function Suppliers() {
     try {
       const [suppRes, matRes] = await Promise.all([
         supabase.from('suppliers').select(`*, creator:created_by(full_name), updater:updated_by(full_name)`).order('created_at', { ascending: false }),
-        supabase.from('materials').select('name').order('name')
+        supabase.from('materials').select('material_description').order('material_description')
       ]);
       if (suppRes.error) throw suppRes.error;
       if (matRes.error) throw matRes.error;
@@ -363,7 +363,7 @@ export default function Suppliers() {
         isOpen={showDeleteConfirm} 
         onClose={() => setShowDeleteConfirm(false)} 
         onConfirm={confirmDelete}
-        itemName={suppliers.find(m => m.id === editingId)?.name || 'this record'}
+        itemName={suppliers.find(m => m.id === editingId)?.supplier_name || 'this record'}
         isDeleting={isDeleting}
       />
     </div>
