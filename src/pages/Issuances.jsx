@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
+import QRScanner from '../components/QRScanner';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
 import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
@@ -12,6 +13,7 @@ export default function Issuances() {
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -227,7 +229,12 @@ export default function Issuances() {
               <input required type="text" name="project_site" value={formData.project_site} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-sm font-medium text-gray-700">Material</label>
+                <button type="button" onClick={() => setShowQRScanner(true)} className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                  📷 Scan QR
+                </button>
+              </div>
               <select required name="material_id" value={formData.material_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
                 <option value="">Select Material...</option>
                 {materials.map(m => (
@@ -397,6 +404,12 @@ export default function Issuances() {
         itemName={issuances.find(m => m.id === editingId)?.issuance_id || 'this record'}
         isDeleting={isDeleting}
       />
-    </div>
+    
+    <QRScanner
+      isOpen={showQRScanner}
+      onClose={() => setShowQRScanner(false)}
+      onScanned={handleQRScanned}
+    />
+</div>
   );
 }
