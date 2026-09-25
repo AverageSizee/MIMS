@@ -44,17 +44,16 @@ export default function Suppliers() {
   const [editingId, setEditingId] = useState(null);
   const [locating, setLocating] = useState(false);
   
-  const initialFormState = { name: '', contact_person: '', contact_information: '', address: '', materials_supplied: '' };
+  const initialFormState = { supplier_name: '', contact_person: '', contact_info: '', address_location: '', primary_materials_supplied: '' };
   const [formData, setFormData] = useState(initialFormState);
 
   const availableColumns = [
-    { id: 'id', label: 'ID' },
-    { id: 'name', label: 'Company' },
+    { id: 'id', label: 'Supplier ID' },
+    { id: 'name', label: 'Supplier Name' },
     { id: 'contact_person', label: 'Contact Person' },
     { id: 'contact_info', label: 'Contact Info' },
-    { id: 'supplies', label: 'Supplies' },
-    { id: 'created_by', label: 'Added By' },
-    { id: 'updated_by', label: 'Updated By' }
+    { id: 'address', label: 'Address / Location' },
+    { id: 'materials', label: 'Primary Materials Supplied' }
   ];
   
   const [visibleColumns, setVisibleColumns] = useState(['id', 'name', 'contact_person', 'contact_info', 'supplies']);
@@ -82,7 +81,7 @@ export default function Suppliers() {
   const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleMaterialToggle = (matName) => {
-    let currentMats = formData.materials_supplied ? formData.materials_supplied.split(', ').filter(Boolean) : [];
+    let currentMats = formData.primary_materials_supplied ? formData.primary_materials_supplied.split(', ').filter(Boolean) : [];
     if (currentMats.includes(matName)) {
       currentMats = currentMats.filter(m => m !== matName);
     } else {
@@ -151,11 +150,11 @@ export default function Suppliers() {
 
   const handleEdit = (supplier) => {
     setFormData({
-      name: supplier.name,
+      supplier_name: supplier.supplier_name,
       contact_person: supplier.contact_person || '',
-      contact_information: supplier.contact_information || '',
-      address: supplier.address || '',
-      materials_supplied: supplier.materials_supplied || ''
+      contact_info: supplier.contact_info || '',
+      address_location: supplier.address_location || '',
+      primary_materials_supplied: supplier.primary_materials_supplied || ''
     });
     setEditingId(supplier.id);
     setShowForm(true);
@@ -197,26 +196,26 @@ export default function Suppliers() {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
-            <input required name="name" value={formData.name} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            <input required name="supplier_name" value={formData.supplier_name} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
             <input required name="contact_person" value={formData.contact_person} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contact Info (Phone/Email)</label>
-            <input required name="contact_information" value={formData.contact_information} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Contact Info</label>
+            <input required name="contact_info" value={formData.contact_info} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
           
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Materials Supplied</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Primary Materials Supplied</label>
             <CreatableSelect
               isMulti
               name="materials_supplied"
               options={availableMaterials.map(mat => ({ value: mat, label: mat }))}
               value={
-                formData.materials_supplied
-                  ? formData.materials_supplied.split(', ').filter(Boolean).map(mat => ({ value: mat, label: mat }))
+                formData.primary_materials_supplied
+                  ? formData.primary_materials_supplied.split(', ').filter(Boolean).map(mat => ({ value: mat, label: mat }))
                   : []
               }
               onChange={(selectedOptions) => {
@@ -241,7 +240,7 @@ export default function Suppliers() {
               <span>Address</span>
               {locating && <span className="text-blue-500 text-xs flex items-center"><Loader2 className="w-3 h-3 animate-spin mr-1" /> Locating...</span>}
             </label>
-            <textarea required name="address" value={formData.address} onChange={handleInputChange} placeholder="Type address or click on the map below" className="w-full border border-gray-300 rounded-md p-2" rows="2"></textarea>
+            <textarea required name="address_location" value={formData.address_location} onChange={handleInputChange} placeholder="Type address or click on the map below" className="w-full border border-gray-300 rounded-md p-2" rows="2"></textarea>
             
             {/* Map Picker */}
             <div className="h-48 w-full mt-2 rounded-md overflow-hidden border border-gray-300 relative z-0">
@@ -300,10 +299,10 @@ export default function Suppliers() {
                   {suppliers.map((s) => (
                     <tr key={s.id} className="hover:bg-gray-50">
                       {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{s.supplier_id}</td>}
-                      {visibleColumns.includes('name') && <td className="px-6 py-4 font-bold text-gray-900">{s.name}</td>}
+                      {visibleColumns.includes('name') && <td className="px-6 py-4 font-bold text-gray-900">{s.supplier_name}</td>}
                       {visibleColumns.includes('contact_person') && <td className="px-6 py-4 text-gray-600">{s.contact_person}</td>}
-                      {visibleColumns.includes('contact_info') && <td className="px-6 py-4 text-gray-600">{s.contact_information}</td>}
-                      {visibleColumns.includes('supplies') && <td className="px-6 py-4 text-xs">{s.materials_supplied}</td>}
+                      {visibleColumns.includes('contact_info') && <td className="px-6 py-4 text-gray-600">{s.contact_info}</td>}
+                      {visibleColumns.includes('supplies') && <td className="px-6 py-4 text-xs">{s.primary_materials_supplied}</td>}
                       {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{s.creator?.full_name || 'System'}</td>}
                       {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{s.updater?.full_name || '-'}</td>}
                       <td className="px-6 py-4 text-right">
@@ -327,7 +326,7 @@ export default function Suppliers() {
                   <div className="flex justify-between items-start">
                     <div>
                       {visibleColumns.includes('id') && <p className="text-[10px] text-gray-500 font-bold tracking-wider uppercase">ID: {s.supplier_id}</p>}
-                      {visibleColumns.includes('name') && <p className="font-bold text-gray-900 text-lg leading-tight mt-1">{s.name}</p>}
+                      {visibleColumns.includes('name') && <p className="font-bold text-gray-900 text-lg leading-tight mt-1">{s.supplier_name}</p>}
                     </div>
                     <button onClick={() => handleEdit(s)} className="p-2 text-blue-600 bg-blue-50 rounded-lg shrink-0 ml-2">
                       <Edit2 className="w-4 h-4" />
@@ -338,10 +337,10 @@ export default function Suppliers() {
                       <div><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Contact Person</p><p className="font-medium text-gray-800">{s.contact_person}</p></div>
                     )}
                     {visibleColumns.includes('contact_info') && (
-                      <div><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Contact Info</p><p className="font-medium text-gray-800">{s.contact_information}</p></div>
+                      <div><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Contact Info</p><p className="font-medium text-gray-800">{s.contact_info}</p></div>
                     )}
                     {visibleColumns.includes('supplies') && (
-                      <div className="sm:col-span-2"><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Supplies</p><p className="font-medium text-gray-800 text-xs">{s.materials_supplied}</p></div>
+                      <div className="sm:col-span-2"><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Supplies</p><p className="font-medium text-gray-800 text-xs">{s.primary_materials_supplied}</p></div>
                     )}
                     {visibleColumns.includes('created_by') && (
                       <div><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Added By</p><p className="font-medium text-gray-600 italic">{s.creator?.full_name || 'System'}</p></div>

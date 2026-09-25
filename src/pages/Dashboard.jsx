@@ -14,22 +14,11 @@ export default function Dashboard() {
         const { data: invData, error: invError } = await supabase
           .from('inventory_dashboard')
           .select('*')
-          .order('name');
+          .order('material_description');
         
         if (invError) throw invError;
 
-        const { data: matData, error: matError } = await supabase
-          .from('materials')
-          .select('id, unit_cost');
-
-        if (matError) throw matError;
-
-        const merged = (invData || []).map(i => {
-          const mat = matData.find(m => m.id === i.id);
-          return { ...i, unit_cost: mat ? mat.unit_cost : 0 };
-        });
-
-        setInventory(merged);
+        setInventory(invData || []);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
         setError(err.message);
@@ -202,10 +191,10 @@ export default function Dashboard() {
                 {criticalItems.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 font-bold text-gray-900">{item.material_id}</td>
-                    <td className="px-6 py-4 text-gray-700">{item.name}</td>
+                    <td className="px-6 py-4 text-gray-700">{item.material_description}</td>
                     <td className="px-6 py-4 font-mono font-bold text-gray-800 text-right">{item.current_stock} <span className="text-xs text-gray-500">{item.unit_of_measurement}</span></td>
-                    <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.min_reorder_level}</td>
-                    <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.max_stock_level}</td>
+                    <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.reorder_level}</td>
+                    <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.target_level}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`px-2 py-1 rounded text-[10px] font-bold border tracking-wider uppercase
                         ${item.status === 'REORDER' ? 'border-amber-500 text-amber-700 bg-amber-50/50' : 
@@ -234,7 +223,7 @@ export default function Dashboard() {
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-[10px] text-gray-500 font-bold tracking-wider uppercase">ID: {item.material_id}</p>
-                    <p className="font-bold text-gray-900 text-sm leading-tight mt-1">{item.name}</p>
+                    <p className="font-bold text-gray-900 text-sm leading-tight mt-1">{item.material_description}</p>
                   </div>
                   <span className={`px-2 py-1 rounded text-[10px] font-bold border tracking-wider uppercase shrink-0 ml-2
                         ${item.status === 'REORDER' ? 'border-amber-500 text-amber-700 bg-amber-50/50' : 
@@ -250,11 +239,11 @@ export default function Dashboard() {
                   </div>
                   <div className="flex flex-col border-l border-gray-200">
                     <p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Reorder</p>
-                    <p className="font-mono text-gray-700">{item.min_reorder_level}</p>
+                    <p className="font-mono text-gray-700">{item.reorder_level}</p>
                   </div>
                   <div className="flex flex-col border-l border-gray-200">
                     <p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Target</p>
-                    <p className="font-mono text-gray-700">{item.max_stock_level}</p>
+                    <p className="font-mono text-gray-700">{item.target_level}</p>
                   </div>
                 </div>
               </div>

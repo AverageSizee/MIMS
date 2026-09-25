@@ -20,22 +20,24 @@ export default function Materials() {
   // Column management
   const availableColumns = [
     { id: 'id', label: 'Material ID' },
-    { id: 'name', label: 'Name' },
+    { id: 'name', label: 'Material Description' },
     { id: 'category', label: 'Category' },
-    { id: 'uom', label: 'UoM' },
-    { id: 'cost', label: 'Unit Cost' },
-    { id: 'levels', label: 'Min/Max Level' }
+    { id: 'unit', label: 'Unit' },
+    { id: 'cost', label: 'Unit Cost (\u20B1)' },
+    { id: 'levels', label: 'Reorder / Target' },
+    { id: 'stock', label: 'Stock Balance' },
+    { id: 'status', label: 'Status' }
   ];
   if (isManager) {
     availableColumns.push({ id: 'created_by', label: 'Added By' });
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id));
+  const [visibleColumns, setVisibleColumns] = useState(['id','name','category','unit','cost','levels','stock','status']);
 
   const initialFormState = {
-    name: '', category: '', unit_of_measurement: '',
-    unit_cost: '', min_reorder_level: '', max_stock_level: ''
+    material_description: '', category: '', unit: '',
+    unit_cost: '', reorder_level: '', target_level: ''
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -82,9 +84,9 @@ export default function Materials() {
     setSubmitting(true);
     try {
       const payload = {
-        name: formData.name,
+        material_description: formData.material_description,
         category: formData.category,
-        unit_of_measurement: formData.unit_of_measurement,
+        unit: formData.unit,
         unit_cost: parseFloat(formData.unit_cost),
         min_reorder_level: parseInt(formData.min_reorder_level),
         max_stock_level: parseInt(formData.max_stock_level)
@@ -124,7 +126,7 @@ export default function Materials() {
     try {
       const { data: allSuppliers } = await supabase.from('suppliers').select('id, name, materials_supplied');
       if (allSuppliers) {
-        const affected = allSuppliers.filter(s => s.materials_supplied && s.materials_supplied.split(', ').includes(mat.name));
+        const affected = allSuppliers.filter(s => s.materials_supplied && s.materials_supplied.split(', ').includes(mat.material_description));
         setAffectedSuppliers(affected);
       } else {
         setAffectedSuppliers([]);
@@ -142,7 +144,7 @@ export default function Materials() {
       const mat = materials.find(m => m.id === editingId);
       if (mat) {
         for (const supp of affectedSuppliers) {
-          const newMats = supp.materials_supplied.split(', ').filter(m => m !== mat.name).join(', ');
+          const newMats = supp.materials_supplied.split(', ').filter(m => m !== mat.material_description).join(', ');
           await supabase.from('suppliers').update({ materials_supplied: newMats }).eq('id', supp.id);
         }
       }
@@ -186,8 +188,8 @@ export default function Materials() {
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-            <input required name="name" value={formData.name} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Material Description</label>
+            <input required name="material_description" value={formData.material_description} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
@@ -195,7 +197,7 @@ export default function Materials() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Unit of Measurement (e.g. kgs, pcs)</label>
-            <input required name="unit_of_measurement" value={formData.unit_of_measurement} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            <input required name="unit" value={formData.unit} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Unit Cost</label>
@@ -204,11 +206,11 @@ export default function Materials() {
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Min Level</label>
-              <input required type="number" name="min_reorder_level" value={formData.min_reorder_level} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+              <input required type="number" name="reorder_level" value={formData.reorder_level} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Level</label>
-              <input required type="number" name="max_stock_level" value={formData.max_stock_level} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Target Level</label>
+              <input required type="number" name="target_level" value={formData.target_level} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
           </div>
           <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
@@ -255,11 +257,13 @@ export default function Materials() {
                   {materials.map((m) => (
                     <tr key={m.id} className="hover:bg-gray-50">
                       {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{m.material_id}</td>}
-                      {visibleColumns.includes('name') && <td className="px-6 py-4">{m.name}</td>}
+                      {visibleColumns.includes('name') && <td className="px-6 py-4">{m.material_description}</td>}
                       {visibleColumns.includes('category') && <td className="px-6 py-4 text-gray-600">{m.category}</td>}
-                      {visibleColumns.includes('uom') && <td className="px-6 py-4">{m.unit_of_measurement}</td>}
+                      {visibleColumns.includes('uom') && <td className="px-6 py-4">{m.unit}</td>}
                       {visibleColumns.includes('cost') && <td className="px-6 py-4 font-medium">₱{Number(m.unit_cost).toFixed(2)}</td>}
-                      {visibleColumns.includes('levels') && <td className="px-6 py-4 text-gray-500">{m.min_reorder_level} / {m.max_stock_level}</td>}
+                      {visibleColumns.includes('levels') && <td className="px-6 py-4 text-gray-500">{m.reorder_level} / {m.target_level}</td>}
+                        {visibleColumns.includes('stock') && <td className="px-6 py-4 font-bold text-gray-900">{m.stock_balance || 0}</td>}
+                        {visibleColumns.includes('status') && <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-xs font-bold ${m.status === 'NORMAL' ? 'bg-green-100 text-green-700' : m.status === 'REORDER' ? 'bg-amber-100 text-amber-700' : m.status === 'OUT OF STOCK' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>{m.status || 'NORMAL'}</span></td>}
                       {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{m.creator?.full_name || 'System'}</td>}
                       {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{m.updater?.full_name || '-'}</td>}
                       <td className="px-6 py-4 text-right">
@@ -283,7 +287,7 @@ export default function Materials() {
                   <div className="flex justify-between items-start">
                     <div>
                       {visibleColumns.includes('id') && <p className="text-xs text-gray-500 font-medium">ID: {m.material_id}</p>}
-                      {visibleColumns.includes('name') && <p className="font-bold text-gray-900 text-lg">{m.name}</p>}
+                      {visibleColumns.includes('name') && <p className="font-bold text-gray-900 text-lg">{m.material_description}</p>}
                     </div>
                     <button onClick={() => handleEdit(m)} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
                       <Edit2 className="w-4 h-4" />
@@ -294,13 +298,19 @@ export default function Materials() {
                       <div><p className="text-xs text-gray-500">Category</p><p className="font-medium text-gray-800">{m.category}</p></div>
                     )}
                     {visibleColumns.includes('uom') && (
-                      <div><p className="text-xs text-gray-500">UoM</p><p className="font-medium text-gray-800">{m.unit_of_measurement}</p></div>
+                      <div><p className="text-xs text-gray-500">UoM</p><p className="font-medium text-gray-800">{m.unit}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (
-                      <div><p className="text-xs text-gray-500">Unit Cost</p><p className="font-medium text-gray-800">₱{Number(m.unit_cost).toFixed(2)}</p></div>
-                    )}
+                        <div><p className="text-xs text-gray-500">Unit Cost</p><p className="font-medium text-gray-800">\u20B1{Number(m.unit_cost).toFixed(2)}</p></div>
+                      )}
+                      {visibleColumns.includes('stock') && (
+                        <div><p className="text-xs text-gray-500">Stock Balance</p><p className="font-bold text-gray-900">{m.stock_balance || 0}</p></div>
+                      )}
+                      {visibleColumns.includes('status') && (
+                        <div><p className="text-xs text-gray-500">Status</p><span className={`px-2 py-1 rounded text-xs font-bold ${m.status === 'NORMAL' ? 'bg-green-100 text-green-700' : m.status === 'REORDER' ? 'bg-amber-100 text-amber-700' : m.status === 'OUT OF STOCK' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>{m.status || 'NORMAL'}</span></div>
+                      )}
                     {visibleColumns.includes('levels') && (
-                      <div><p className="text-xs text-gray-500">Min/Max</p><p className="font-medium text-gray-800">{m.min_reorder_level} / {m.max_stock_level}</p></div>
+                      <div><p className="text-xs text-gray-500">Min/Max</p><p className="font-medium text-gray-800">{m.reorder_level} / {m.target_level}</p></div>
                     )}
                     {visibleColumns.includes('created_by') && (
                       <div><p className="text-xs text-gray-500">Added By</p><p className="font-medium text-gray-600 italic">{m.creator?.full_name || 'System'}</p></div>
@@ -323,7 +333,7 @@ export default function Materials() {
         isOpen={showDeleteConfirm} 
         onClose={() => setShowDeleteConfirm(false)} 
         onConfirm={confirmDelete}
-        itemName={materials.find(m => m.id === editingId)?.name || 'this material'}
+        itemName={materials.find(m => m.id === editingId)?.material_description || 'this material'}
         affectedItems={affectedSuppliers}
         isDeleting={isDeleting}
       />

@@ -19,21 +19,27 @@ export default function Issuances() {
 
   // Column management
   const availableColumns = [
-    { id: 'id_date', label: 'ID / Date' },
+    { id: 'id', label: 'Issuance ID' },
+    { id: 'date', label: 'Date' },
+    { id: 'site', label: 'Project / Site' },
     { id: 'material', label: 'Material' },
-    { id: 'qty', label: 'Qty' },
+    { id: 'quantity', label: 'Qty' },
     { id: 'cost', label: 'Total Cost' },
-    { id: 'project_site', label: 'Project Site' },
-    { id: 'personnel', label: 'Personnel' }
+    { id: 'requested', label: 'Requested By' },
+    { id: 'released', label: 'Released By' },
+    { id: 'purpose', label: 'Purpose' }
   ];
   if (isManager) {
     availableColumns.push({ id: 'created_by', label: 'Added By' });
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id));
+  const [visibleColumns, setVisibleColumns] = useState(['id','date','site','material','quantity','cost','requested','released','purpose']);
 
   const initialFormState = {
+    project_site: '',
+    requested_by: '',
+    released_by: '',
     issuance_date: new Date().toISOString().split('T')[0],
     material_id: '',
     quantity_issued: '',
@@ -83,6 +89,9 @@ export default function Issuances() {
   const handleEdit = (issuance) => {
     setFormData({
       issuance_date: issuance.issuance_date,
+        project_site: issuance.project_site,
+        requested_by: issuance.requested_by,
+        released_by: issuance.released_by,
       material_id: issuance.material_id || '',
       quantity_issued: issuance.quantity_issued || '',
       unit_cost: issuance.unit_cost || '',
@@ -102,6 +111,9 @@ export default function Issuances() {
     try {
       const payload = {
         issuance_date: formData.issuance_date,
+          project_site: formData.project_site,
+          requested_by: formData.requested_by,
+          released_by: formData.released_by,
         material_id: formData.material_id,
         quantity_issued: parseInt(formData.quantity_issued),
         unit_cost: parseFloat(formData.unit_cost),
@@ -188,6 +200,18 @@ export default function Issuances() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input required type="date" name="issuance_date" value={formData.issuance_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Project / Site</label>
+              <input required type="text" name="project_site" value={formData.project_site} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Requested By</label>
+              <input required type="text" name="requested_by" value={formData.requested_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Released By</label>
+              <input required type="text" name="released_by" value={formData.released_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>

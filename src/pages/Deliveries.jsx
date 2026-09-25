@@ -20,21 +20,25 @@ export default function Deliveries() {
 
   // Column management
   const availableColumns = [
-    { id: 'id_date', label: 'ID / Date' },
-    { id: 'material', label: 'Material' },
+    { id: 'id', label: 'Delivery ID' },
+    { id: 'po_no', label: 'PO No.' },
+    { id: 'date', label: 'Date' },
     { id: 'supplier', label: 'Supplier' },
-    { id: 'qty', label: 'Qty' },
+    { id: 'material', label: 'Material' },
+    { id: 'quantity', label: 'Qty' },
     { id: 'cost', label: 'Total Cost' },
-    { id: 'po', label: 'PO / Receiver' }
+    { id: 'received_by', label: 'Received By' }
   ];
   if (isManager) {
     availableColumns.push({ id: 'created_by', label: 'Added By' });
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id));
+  const [visibleColumns, setVisibleColumns] = useState(['id','po_no','date','supplier','material','quantity','cost','received_by']);
 
   const initialFormState = {
+    po_no: '',
+    received_by: '',
     delivery_date: new Date().toISOString().split('T')[0],
     material_id: '',
     supplier_id: '',
@@ -85,6 +89,8 @@ export default function Deliveries() {
   const handleEdit = (delivery) => {
     setFormData({
       delivery_date: delivery.delivery_date,
+        po_no: delivery.po_no,
+        received_by: delivery.received_by,
       material_id: delivery.material_id || '',
       supplier_id: delivery.supplier_id || '',
       quantity_delivered: delivery.quantity_delivered || '',
@@ -103,6 +109,8 @@ export default function Deliveries() {
     try {
       const payload = {
         delivery_date: formData.delivery_date,
+          po_no: formData.po_no,
+          received_by: formData.received_by,
         material_id: formData.material_id,
         supplier_id: formData.supplier_id,
         quantity_delivered: parseInt(formData.quantity_delivered),
@@ -188,6 +196,14 @@ export default function Deliveries() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input required type="date" name="delivery_date" value={formData.delivery_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">PO No.</label>
+              <input required type="text" name="po_no" value={formData.po_no} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Received By</label>
+              <input required type="text" name="received_by" value={formData.received_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>

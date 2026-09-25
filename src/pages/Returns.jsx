@@ -19,30 +19,31 @@ export default function Returns() {
 
   // Column management
   const availableColumns = [
-    { id: 'id_date', label: 'ID / Date' },
+    { id: 'id', label: 'Return ID' },
+    { id: 'date', label: 'Date' },
+    { id: 'site', label: 'Project / Site' },
     { id: 'material', label: 'Material' },
-    { id: 'qty', label: 'Qty' },
-    { id: 'condition', label: 'Condition' },
-    { id: 'project_site', label: 'Project Site' },
-    { id: 'personnel', label: 'Personnel' }
+    { id: 'quantity', label: 'Qty' },
+    { id: 'cost', label: 'Total Cost' },
+    { id: 'returned', label: 'Returned By' },
+    { id: 'received', label: 'Received By' },
+    { id: 'reason_condition', label: 'Reason & Condition' }
   ];
   if (isManager) {
     availableColumns.push({ id: 'created_by', label: 'Added By' });
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id));
+  const [visibleColumns, setVisibleColumns] = useState(['id','date','site','material','quantity','cost','returned','received','reason_condition']);
 
   const initialFormState = {
     return_date: new Date().toISOString().split('T')[0],
     material_id: '',
-    quantity_returned: '',
-    cost_of_returned_materials: '',
-    condition: 'Good',
+    quantity: '',
     project_site: '',
     returned_by: '',
     received_by: '',
-    reason: ''
+    reason_condition: ''
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -95,6 +96,10 @@ export default function Returns() {
   const handleEdit = (ret) => {
     setFormData({
       return_date: ret.return_date,
+        project_site: ret.project_site,
+        returned_by: ret.returned_by,
+        received_by: ret.received_by,
+        reason_condition: ret.reason_condition || '',
       material_id: ret.material_id || '',
       quantity_returned: ret.quantity_returned || '',
       cost_of_returned_materials: ret.cost_of_returned_materials || '',
@@ -115,6 +120,9 @@ export default function Returns() {
     try {
       const payload = {
         return_date: formData.return_date,
+          project_site: formData.project_site,
+          returned_by: formData.returned_by,
+          received_by: formData.received_by,
         material_id: formData.material_id,
         quantity_returned: parseInt(formData.quantity_returned),
         cost_of_returned_materials: parseFloat(formData.cost_of_returned_materials),
@@ -202,6 +210,18 @@ export default function Returns() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input required type="date" name="return_date" value={formData.return_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Project / Site</label>
+              <input required type="text" name="project_site" value={formData.project_site} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Returned By</label>
+              <input required type="text" name="returned_by" value={formData.returned_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Received By</label>
+              <input required type="text" name="received_by" value={formData.received_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
@@ -224,15 +244,7 @@ export default function Returns() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
-            <select required name="condition" value={formData.condition} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
-              <option value="Good">Good / Usable</option>
-              <option value="Damaged">Damaged</option>
-              <option value="Excess">Excess</option>
-              <option value="Defective">Defective</option>
-            </select>
-          </div>
+          
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Project/Site</label>
             <input required name="project_site" value={formData.project_site} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
@@ -295,35 +307,15 @@ export default function Returns() {
                 <tbody className="divide-y divide-gray-100">
                   {returns.map((r) => (
                     <tr key={r.id} className="hover:bg-gray-50">
-                      {visibleColumns.includes('id_date') && (
-                        <td className="px-6 py-4">
-                          <div className="font-medium">{r.return_id}</div>
-                          <div className="text-xs text-gray-500">{r.return_date}</div>
-                        </td>
-                      )}
-                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{r.materials?.name}</td>}
-                      {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-green-600">+{r.quantity_returned}</td>}
-                      {visibleColumns.includes('condition') && (
-                        <td className="px-6 py-4">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            r.condition === 'Good' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
-                            {r.condition}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('project_site') && (
-                        <td className="px-6 py-4 text-gray-600">
-                          <div>{r.project_site}</div>
-                          <div className="text-xs truncate max-w-[150px]">{r.reason}</div>
-                        </td>
-                      )}
-                      {visibleColumns.includes('personnel') && (
-                        <td className="px-6 py-4 text-gray-600 text-xs">
-                          <div>Ret: {r.returned_by}</div>
-                          <div>Rec: {r.received_by}</div>
-                        </td>
-                      )}
+                      {visibleColumns.includes('id') && <td className="px-6 py-4">{r.return_id}</td>}
+                      {visibleColumns.includes('date') && <td className="px-6 py-4">{new Date(r.return_date).toLocaleDateString()}</td>}
+                      {visibleColumns.includes('site') && <td className="px-6 py-4">{r.project_site}</td>}
+                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{r.materials?.material_description}</td>}
+                      {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-green-600">+{r.quantity}</td>}
+                      {visibleColumns.includes('returned') && <td className="px-6 py-4">{r.returned_by}</td>}
+                      {visibleColumns.includes('received') && <td className="px-6 py-4">{r.received_by}</td>}
+                      {visibleColumns.includes('reason_condition') && <td className="px-6 py-4">{r.reason_condition}</td>}
+                      {visibleColumns.includes('cost') && <td className="px-6 py-4">\u20B1{Number(r.total_cost).toFixed(2)}</td>}
                       {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{r.creator?.full_name || 'System'}</td>}
                       {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{r.updater?.full_name || '-'}</td>}
                       <td className="px-6 py-4 text-right">
@@ -362,7 +354,7 @@ export default function Returns() {
                       <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{r.materials?.name}</p></div>
                     )}
                     {visibleColumns.includes('qty') && (
-                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-green-600">+{r.quantity_returned}</p></div>
+                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-green-600">+{r.quantity}</p></div>
                     )}
                     {visibleColumns.includes('condition') && (
                       <div>
