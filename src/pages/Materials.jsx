@@ -34,6 +34,10 @@ export default function Materials() {
   }
 
   const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activeSlicer, setActiveSlicer] = useState('All');
+
 
   const initialFormState = {
     material_description: '', category: '', unit: '',
@@ -48,7 +52,7 @@ export default function Materials() {
   async function fetchMaterials() {
     try {
       const { data, error } = await supabase
-        .from('inventory_dashboard').select('*').order('material_description');
+        .from('inventory_dashboard').select('*').order('created_at', { ascending: false });
       
       if (error) throw error;
       setMaterials(data || []);
@@ -167,6 +171,23 @@ export default function Materials() {
     }
   };
 
+  
+  // Filtering & Pagination Logic
+  const itemsPerPage = 20;
+  
+  const uniqueCategories = ['All', ...new Set(materials.map(m => m.category).filter(Boolean))];
+  
+  const filteredData = materials.filter(m => {
+    const matchesSearch = Object.values(m).some(val => 
+      val && val.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const matchesSlicer = activeSlicer === 'All' || m.category === activeSlicer;
+    return matchesSearch && matchesSlicer;
+  });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (<div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-medium text-gray-800">Master Materials List</h2>
@@ -233,7 +254,15 @@ export default function Materials() {
       </Modal>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="flex justify-end p-2 border-b border-gray-50">
+        <div className="flex justify-between p-2 border-b border-gray-50 items-center flex-wrap gap-2">
+            <div className="flex items-center gap-4 flex-wrap">
+               <input type="text" placeholder="Search materials..." value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} className="border border-gray-300 rounded-md p-1.5 text-sm w-64" />
+               <div className="flex gap-1 flex-wrap">
+                  {uniqueCategories.map(cat => (
+                     <button key={cat} onClick={() => {setActiveSlicer(cat); setCurrentPage(1);}} className={`px-3 py-1 text-xs rounded-full border ${activeSlicer === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'}`}>{cat}</button>
+                  ))}
+               </div>
+            </div>
           <ColumnToggle columns={availableColumns} visibleColumns={visibleColumns} setVisibleColumns={setVisibleColumns} />
         </div>
         
@@ -257,7 +286,7 @@ export default function Materials() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {materials.map((m) => (
+                    {paginatedData.map((m) => (
                       <tr key={m.id} className="hover:bg-gray-50">
                         {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{m.material_id}</td>}
                         {visibleColumns.includes('name') && <td className="px-6 py-4">{m.material_description}</td>}
@@ -278,12 +307,27 @@ export default function Materials() {
                       <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No materials added yet. Add at least 20 for your assignment.</td></tr>
                     )}
                   </tbody>
+                    {totalPages > 1 && (
+                      <tfoot>
+                        <tr>
+                          <td colSpan="100%">
+                            <div className="flex justify-center items-center gap-2 p-4 border-t border-gray-50">
+                              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Prev</button>
+                              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button key={page} onClick={() => setCurrentPage(page)} className={`px-3 py-1 rounded border text-sm ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white'}`}>{page}</button>
+                              ))}
+                              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Next</button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    )}
                 </table>
             </div>
             
             {/* Mobile Card View */}
             <div className="md:hidden flex flex-col divide-y divide-gray-100">
-              {materials.map((m) => (
+              {paginatedData.map((m) => (
                 <div key={m.id} className="p-4 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>

@@ -57,6 +57,9 @@ export default function Suppliers() {
   ];
   
   const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   async function fetchData() {
     try {
@@ -184,6 +187,19 @@ export default function Suppliers() {
     }
   };
 
+  
+  // Filtering & Pagination Logic
+  const itemsPerPage = 20;
+  
+  const filteredData = suppliers.filter(s => {
+    return Object.values(s).some(val => 
+      val && typeof val !== 'object' && val.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (<div className="space-y-6">
       <div className="flex justify-between items-center border-b pb-4">
         <h2 className="text-2xl font-bold text-gray-800 uppercase">Supplier Directory</h2>
@@ -273,7 +289,10 @@ export default function Suppliers() {
       </Modal>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="flex justify-end p-2 border-b border-gray-50">
+        <div className="flex justify-between p-2 border-b border-gray-50 items-center flex-wrap gap-2">
+            <div className="flex items-center gap-4 flex-wrap">
+               <input type="text" placeholder="Search suppliers..." value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} className="border border-gray-300 rounded-md p-1.5 text-sm w-64" />
+            </div>
           <ColumnToggle columns={availableColumns} visibleColumns={visibleColumns} setVisibleColumns={setVisibleColumns} />
         </div>
         
@@ -295,7 +314,7 @@ export default function Suppliers() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {suppliers.map((s) => (
+                    {paginatedData.map((s) => (
                       <tr key={s.id} className="hover:bg-gray-50">
                         {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{s.supplier_id}</td>}
                         {visibleColumns.includes('name') && <td className="px-6 py-4 font-medium text-gray-900">{s.supplier_name}</td>}
@@ -314,12 +333,27 @@ export default function Suppliers() {
                       <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No suppliers recorded yet. Add at least 5 for your assignment.</td></tr>
                     )}
                   </tbody>
+                    {totalPages > 1 && (
+                      <tfoot>
+                        <tr>
+                          <td colSpan="100%">
+                            <div className="flex justify-center items-center gap-2 p-4 border-t border-gray-50">
+                              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Prev</button>
+                              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button key={page} onClick={() => setCurrentPage(page)} className={`px-3 py-1 rounded border text-sm ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white'}`}>{page}</button>
+                              ))}
+                              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Next</button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    )}
                 </table>
             </div>
 
             {/* Mobile Card View */}
             <div className="md:hidden flex flex-col divide-y divide-gray-100">
-              {suppliers.map((s) => (
+              {paginatedData.map((s) => (
                 <div key={s.id} className="p-4 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
@@ -351,6 +385,15 @@ export default function Suppliers() {
               ))}
               {suppliers.length === 0 && (
                 <div className="p-6 text-center text-gray-500">No suppliers added yet. Add at least 5 for your assignment.</div>
+                )}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center gap-2 p-4 border-t border-gray-50">
+                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Prev</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <button key={page} onClick={() => setCurrentPage(page)} className={`px-3 py-1 rounded border text-sm ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white'}`}>{page}</button>
+                    ))}
+                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Next</button>
+                  </div>
               )}
             </div>
           </>

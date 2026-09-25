@@ -35,6 +35,9 @@ export default function Deliveries() {
   }
 
   const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   const initialFormState = {
     po_no: '',
@@ -173,6 +176,20 @@ export default function Deliveries() {
     }
   };
 
+  
+  // Filtering & Pagination Logic
+  const itemsPerPage = 20;
+  
+  const filteredData = deliveries.filter(d => {
+    return Object.values(d).some(val => 
+      val && typeof val !== 'object' && val.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    ) || (d.materials && d.materials.material_description && d.materials.material_description.toLowerCase().includes(searchTerm.toLowerCase()))
+      || (d.suppliers && d.suppliers.supplier_name && d.suppliers.supplier_name.toLowerCase().includes(searchTerm.toLowerCase()));
+  });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (<div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-medium text-gray-800">Delivery Records (Inbound)</h2>
@@ -243,7 +260,10 @@ export default function Deliveries() {
       </Modal>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="flex justify-end p-2 border-b border-gray-50">
+        <div className="flex justify-between p-2 border-b border-gray-50 items-center flex-wrap gap-2">
+            <div className="flex items-center gap-4 flex-wrap">
+               <input type="text" placeholder="Search deliveries..." value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} className="border border-gray-300 rounded-md p-1.5 text-sm w-64" />
+            </div>
           <ColumnToggle columns={availableColumns} visibleColumns={visibleColumns} setVisibleColumns={setVisibleColumns} />
         </div>
 
@@ -267,7 +287,7 @@ export default function Deliveries() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {deliveries.map((d) => (
+                    {paginatedData.map((d) => (
                       <tr key={d.id} className="hover:bg-gray-50">
                         {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{d.delivery_id}</td>}
                         {visibleColumns.includes('po_no') && <td className="px-6 py-4 font-medium text-gray-600">{d.po_no}</td>}
@@ -288,12 +308,27 @@ export default function Deliveries() {
                       <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No deliveries recorded yet. Add at least 20 for your assignment.</td></tr>
                     )}
                   </tbody>
+                    {totalPages > 1 && (
+                      <tfoot>
+                        <tr>
+                          <td colSpan="100%">
+                            <div className="flex justify-center items-center gap-2 p-4 border-t border-gray-50">
+                              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Prev</button>
+                              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button key={page} onClick={() => setCurrentPage(page)} className={`px-3 py-1 rounded border text-sm ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white'}`}>{page}</button>
+                              ))}
+                              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded border disabled:opacity-50 text-sm">Next</button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    )}
                 </table>
             </div>
 
             {/* Mobile Card View */}
             <div className="md:hidden flex flex-col divide-y divide-gray-100">
-              {deliveries.map((d) => (
+              {paginatedData.map((d) => (
                 <div key={d.id} className="p-4 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
