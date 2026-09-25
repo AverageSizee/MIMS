@@ -27,8 +27,7 @@ export default function Issuances() {
     { id: 'cost', label: 'Total Cost' },
     { id: 'requested', label: 'Requested By' },
     { id: 'released', label: 'Released By' },
-    { id: 'purpose', label: 'Purpose' },
-    { id: 'cost_code', label: 'WBS Cost Code' }
+    { id: 'purpose', label: 'Purpose' }
   ];
   if (isManager) {
     availableColumns.push({ id: 'created_by', label: 'Added By' });
@@ -48,8 +47,7 @@ export default function Issuances() {
     quantity: '',
     requested_by: '',
     released_by: 'Storekeeper',
-    purpose: '',
-    cost_code: ''
+    purpose: ''
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -246,10 +244,6 @@ export default function Issuances() {
               <input required type="text" name="purpose" value={formData.purpose} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">WBS Cost Code</label>
-              <input type="text" name="cost_code" value={formData.cost_code} onChange={handleInputChange} placeholder="e.g. 03-3000" className="w-full border border-gray-300 rounded-md p-2" />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Requested By</label>
               <input required type="text" name="requested_by" value={formData.requested_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
@@ -299,7 +293,6 @@ export default function Issuances() {
                       {visibleColumns.includes('requested') && <th className="px-6 py-3 font-medium">Requested By</th>}
                       {visibleColumns.includes('released') && <th className="px-6 py-3 font-medium">Released By</th>}
                       {visibleColumns.includes('purpose') && <th className="px-6 py-3 font-medium">Purpose</th>}
-                    {visibleColumns.includes('cost_code') && <th className="px-6 py-3 font-medium text-purple-200">WBS Cost Code</th>}
                       <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
@@ -315,7 +308,6 @@ export default function Issuances() {
                         {visibleColumns.includes('requested') && <td className="px-6 py-4 text-gray-500">{i.requested_by}</td>}
                         {visibleColumns.includes('released') && <td className="px-6 py-4 text-gray-500">{i.released_by}</td>}
                         {visibleColumns.includes('purpose') && <td className="px-6 py-4 text-gray-500">{i.purpose}</td>}
-                        {visibleColumns.includes('cost_code') && <td className="px-6 py-4"><span className="px-2 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded text-xs font-mono">{i.cost_code || '-'}</span></td>}
                         <td className="px-6 py-4 text-right">
                           <button onClick={() => handleEdit(i)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
