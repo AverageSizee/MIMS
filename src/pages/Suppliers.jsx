@@ -263,7 +263,7 @@ export default function Suppliers() {
               }
               onChange={(selectedOptions) => {
                 const values = selectedOptions ? selectedOptions.map(opt => opt.value).join(', ') : '';
-                setFormData({ ...formData, materials_supplied: values });
+                setFormData({ ...formData, primary_materials_supplied: values });
               }}
               placeholder="Search and select materials, or type to add new..."
               className="text-sm"
