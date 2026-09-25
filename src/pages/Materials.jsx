@@ -9,6 +9,7 @@ import ColumnToggle from '../components/ColumnToggle';
 export default function Materials() {
   const { user, isManager } = useAuth();
   const [materials, setMaterials] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -51,11 +52,14 @@ export default function Materials() {
 
   async function fetchMaterials() {
     try {
-      const { data, error } = await supabase
-        .from('inventory_dashboard').select('*').order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      setMaterials(data || []);
+      const [matRes, catRes] = await Promise.all([
+          supabase.from('inventory_dashboard').select('*').order('created_at', { ascending: false }),
+          supabase.from('categories').select('name').order('name')
+        ]);
+        
+        if (matRes.error) throw matRes.error;
+        setMaterials(matRes.data || []);
+        if (!catRes.error) setCategoriesList(catRes.data || []);
     } catch (error) {
       console.error('Error fetching materials:', error.message);
     } finally {
@@ -216,9 +220,14 @@ export default function Materials() {
             <input required name="material_description" value={formData.material_description} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <input required name="category" value={formData.category} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select required name="category" value={formData.category} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2 bg-white">
+                <option value="" disabled>Select Category...</option>
+                {categoriesList.map(c => (
+                  <option key={c.name} value={c.name}>{c.name}</option>
+                ))}
+              </select>
+            </div>
           <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Unit of Measurement</label>
               <select required name="unit" value={formData.unit} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2 bg-white">
