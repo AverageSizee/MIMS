@@ -37,19 +37,16 @@ export default function Issuances() {
   const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
 
   const initialFormState = {
-    project_site: '',
-    requested_by: '',
-    released_by: '',
     issuance_date: new Date().toISOString().split('T')[0],
-    material_id: '',
-    quantity_issued: '',
-    unit_cost: '',
     project_site: '',
+    material_id: '',
+    quantity: '',
     requested_by: '',
     released_by: '',
     purpose: ''
   };
   const [formData, setFormData] = useState(initialFormState);
+
 
   useEffect(() => {
     fetchData();
@@ -88,14 +85,10 @@ export default function Issuances() {
 
   const handleEdit = (issuance) => {
     setFormData({
-      issuance_date: issuance.issuance_date,
-        project_site: issuance.project_site,
-        requested_by: issuance.requested_by,
-        released_by: issuance.released_by,
-      material_id: issuance.material_id || '',
-      quantity_issued: issuance.quantity_issued || '',
-      unit_cost: issuance.unit_cost || '',
+      issuance_date: issuance.issuance_date || '',
       project_site: issuance.project_site || '',
+      material_id: issuance.material_id || '',
+      quantity: issuance.quantity || '',
       requested_by: issuance.requested_by || '',
       released_by: issuance.released_by || '',
       purpose: issuance.purpose || ''
@@ -109,15 +102,17 @@ export default function Issuances() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const selectedMat = materials.find(m => m.id === formData.material_id);
+      const unit_cost = selectedMat ? Number(selectedMat.unit_cost) : 0;
+      const quantity = parseInt(formData.quantity) || 0;
+      
       const payload = {
         issuance_date: formData.issuance_date,
-          project_site: formData.project_site,
-          requested_by: formData.requested_by,
-          released_by: formData.released_by,
-        material_id: formData.material_id,
-        quantity_issued: parseInt(formData.quantity_issued),
-        unit_cost: parseFloat(formData.unit_cost),
         project_site: formData.project_site,
+        material_id: formData.material_id,
+        quantity: quantity,
+        unit_cost: unit_cost,
+        total_cost: quantity * unit_cost,
         requested_by: formData.requested_by,
         released_by: formData.released_by,
         purpose: formData.purpose
@@ -130,10 +125,16 @@ export default function Issuances() {
         }).eq('id', editingId);
         if (error) throw error;
       } else {
-        const generatedId = 'ISS-' + Math.floor(10000 + Math.random() * 90000);
+        const { data: lastRecord } = await supabase.from('issuances').select('issuance_id').order('issuance_id', { ascending: false }).limit(1);
+        let newId = 'ISS-001';
+        if (lastRecord && lastRecord.length > 0 && lastRecord[0].issuance_id) {
+            const lastNum = parseInt(lastRecord[0].issuance_id.split('-')[1]);
+            newId = `ISS-${(lastNum + 1).toString().padStart(3, '0')}`;
+        }
+        
         const { error } = await supabase.from('issuances').insert([{
           ...payload,
-          issuance_id: generatedId,
+          issuance_id: newId,
           created_by: user.id, updated_by: user.id }]);
         if (error) throw error;
       }
@@ -196,13 +197,30 @@ export default function Issuances() {
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-            <input required type="date" name="issuance_date" value={formData.issuance_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input required type="date" name="issuance_date" value={formData.issuance_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Project / Site</label>
               <input required type="text" name="project_site" value={formData.project_site} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+              <select required name="material_id" value={formData.material_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
+                <option value="">Select Material...</option>
+                {materials.map(m => (
+                  <option key={m.id} value={m.id}>{m.material_description}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+              <input required type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+              <input required type="text" name="purpose" value={formData.purpose} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Requested By</label>
@@ -212,59 +230,16 @@ export default function Issuances() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Released By</label>
               <input required type="text" name="released_by" value={formData.released_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
-            <select required name="material_id" value={formData.material_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
-              <option value="">Select Material...</option>
-              {materials.map(m => (
-                <option key={m.id} value={m.id}>{m.name}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-              <input required type="number" name="quantity_issued" value={formData.quantity_issued} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unit Cost</label>
-              <input required type="number" step="0.01" name="unit_cost" value={formData.unit_cost} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Project/Site</label>
-            <input required name="project_site" value={formData.project_site} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
-            <input required name="purpose" value={formData.purpose} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Requested By</label>
-            <input required name="requested_by" value={formData.requested_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Released By</label>
-            <input required name="released_by" value={formData.released_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
-
-          <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
-            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
-              Cancel
-            </button>
-            {editingId && (
-              <button type="button" onClick={handleDeleteClick} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
-                <Trash2 className="w-4 h-4 mr-1" /> Delete
+            
+            <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+              <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
+                Cancel
               </button>
-            )}
-            <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center font-medium text-sm transition-colors">
-              {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (editingId ? 'Update Issuance' : 'Save Issuance')}
-            </button>
-          </div>
-        </form>
+              <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center font-medium text-sm transition-colors">
+                {submitting ? 'Saving...' : (editingId ? 'Update Issuance' : 'Save Issuance')}
+              </button>
+            </div>
+          </form>
       </Modal>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

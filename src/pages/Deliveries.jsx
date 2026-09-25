@@ -38,16 +38,14 @@ export default function Deliveries() {
 
   const initialFormState = {
     po_no: '',
-    received_by: '',
     delivery_date: new Date().toISOString().split('T')[0],
     material_id: '',
     supplier_id: '',
-    quantity_delivered: '',
-    unit_cost: '',
-    purchase_order_number: '',
+    quantity: '',
     received_by: ''
   };
   const [formData, setFormData] = useState(initialFormState);
+
 
   useEffect(() => {
     fetchData();
@@ -88,14 +86,11 @@ export default function Deliveries() {
 
   const handleEdit = (delivery) => {
     setFormData({
-      delivery_date: delivery.delivery_date,
-        po_no: delivery.po_no,
-        received_by: delivery.received_by,
+      po_no: delivery.po_no || '',
+      delivery_date: delivery.delivery_date || '',
       material_id: delivery.material_id || '',
       supplier_id: delivery.supplier_id || '',
-      quantity_delivered: delivery.quantity_delivered || '',
-      unit_cost: delivery.unit_cost || '',
-      purchase_order_number: delivery.purchase_order_number || '',
+      quantity: delivery.quantity || '',
       received_by: delivery.received_by || ''
     });
     setEditingId(delivery.id);
@@ -107,15 +102,18 @@ export default function Deliveries() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const selectedMat = materials.find(m => m.id === formData.material_id);
+      const unit_cost = selectedMat ? Number(selectedMat.unit_cost) : 0;
+      const quantity = parseInt(formData.quantity) || 0;
+      
       const payload = {
+        po_no: formData.po_no,
         delivery_date: formData.delivery_date,
-          po_no: formData.po_no,
-          received_by: formData.received_by,
         material_id: formData.material_id,
         supplier_id: formData.supplier_id,
-        quantity_delivered: parseInt(formData.quantity_delivered),
-        unit_cost: parseFloat(formData.unit_cost),
-        purchase_order_number: formData.purchase_order_number,
+        quantity: quantity,
+        unit_cost: unit_cost,
+        total_cost: quantity * unit_cost,
         received_by: formData.received_by
       };
 
@@ -126,10 +124,16 @@ export default function Deliveries() {
         }).eq('id', editingId);
         if (error) throw error;
       } else {
-        const generatedId = 'DEL-' + Math.floor(10000 + Math.random() * 90000);
+        const { data: lastRecord } = await supabase.from('deliveries').select('delivery_id').order('delivery_id', { ascending: false }).limit(1);
+        let newId = 'DEL-001';
+        if (lastRecord && lastRecord.length > 0 && lastRecord[0].delivery_id) {
+            const lastNum = parseInt(lastRecord[0].delivery_id.split('-')[1]);
+            newId = `DEL-${(lastNum + 1).toString().padStart(3, '0')}`;
+        }
+        
         const { error } = await supabase.from('deliveries').insert([{
           ...payload,
-          delivery_id: generatedId,
+          delivery_id: newId,
           created_by: user.id, updated_by: user.id }]);
         if (error) throw error;
       }
@@ -192,72 +196,50 @@ export default function Deliveries() {
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-            <input required type="date" name="delivery_date" value={formData.delivery_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">PO No.</label>
               <input required type="text" name="po_no" value={formData.po_no} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input required type="date" name="delivery_date" value={formData.delivery_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+              <select required name="material_id" value={formData.material_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
+                <option value="">Select Material...</option>
+                {materials.map(m => (
+                  <option key={m.id} value={m.id}>{m.material_description}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
+              <select required name="supplier_id" value={formData.supplier_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
+                <option value="">Select Supplier...</option>
+                {suppliers.map(s => (
+                  <option key={s.id} value={s.id}>{s.supplier_name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+              <input required type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Received By</label>
               <input required type="text" name="received_by" value={formData.received_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
-            <select required name="material_id" value={formData.material_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
-              <option value="">Select Material...</option>
-              {materials.map(m => (
-                <option key={m.id} value={m.id}>{m.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
-            <select required name="supplier_id" value={formData.supplier_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
-              <option value="">Select Supplier...</option>
-              {suppliers.map(s => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-              <input required type="number" name="quantity_delivered" value={formData.quantity_delivered} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unit Cost</label>
-              <input required type="number" step="0.01" name="unit_cost" value={formData.unit_cost} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">PO Number</label>
-            <input required name="purchase_order_number" value={formData.purchase_order_number} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Received By</label>
-            <input required name="received_by" value={formData.received_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
-          </div>
-
-          <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
-            <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
-              Cancel
-            </button>
-            {editingId && (
-              <button type="button" onClick={handleDeleteClick} className="text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg flex items-center transition-colors font-medium text-sm">
-                <Trash2 className="w-4 h-4 mr-1" /> Delete
+            
+            <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+              <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
+                Cancel
               </button>
-            )}
-            <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center font-medium text-sm transition-colors">
-              {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (editingId ? 'Update Delivery' : 'Save Delivery')}
-            </button>
-          </div>
-        </form>
+              <button disabled={submitting} type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center font-medium text-sm transition-colors">
+                {submitting ? 'Saving...' : (editingId ? 'Update Delivery' : 'Save Delivery')}
+              </button>
+            </div>
+          </form>
       </Modal>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

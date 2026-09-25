@@ -86,8 +86,8 @@ export default function Materials() {
         category: formData.category,
         unit: formData.unit,
         unit_cost: parseFloat(formData.unit_cost),
-        min_reorder_level: parseInt(formData.min_reorder_level),
-        max_stock_level: parseInt(formData.max_stock_level)
+        reorder_level: parseInt(formData.reorder_level),
+        target_level: parseInt(formData.target_level)
       };
 
       if (editingId) {
@@ -97,12 +97,17 @@ export default function Materials() {
         }).eq('id', editingId);
         if (error) throw error;
       } else {
-        const generatedId = 'MAT-' + Math.floor(10000 + Math.random() * 90000);
-        const { error } = await supabase.from('materials').insert([{
-          ...payload,
-          material_id: generatedId,
-          created_by: user.id, updated_by: user.id }]);
-        if (error) throw error;
+        const { data: lastRecord } = await supabase.from('materials').select('material_id').order('material_id', { ascending: false }).limit(1);
+          let generatedId = 'MAT-001';
+          if (lastRecord && lastRecord.length > 0 && lastRecord[0].material_id) {
+              const lastNum = parseInt(lastRecord[0].material_id.split('-')[1]);
+              generatedId = `MAT-${(lastNum + 1).toString().padStart(3, '0')}`;
+          }
+          const { error } = await supabase.from('materials').insert([{
+            ...payload,
+            material_id: generatedId,
+            created_by: user.id, updated_by: user.id }]);
+          if (error) throw error;
       }
 
       setShowForm(false);
