@@ -1,6 +1,5 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
-const QRScanner = React.lazy(() => import('../components/QRScanner'));
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
 import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
@@ -14,7 +13,6 @@ export default function Deliveries() {
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [showQRScanner, setShowQRScanner] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -224,12 +222,7 @@ export default function Deliveries() {
               <input required type="date" name="delivery_date" value={formData.delivery_date} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="block text-sm font-medium text-gray-700">Material</label>
-                <button type="button" onClick={() => setShowQRScanner(true)} className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
-                  📷 Scan QR
-                </button>
-              </div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
               <select required name="material_id" value={formData.material_id} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2">
                 <option value="">Select Material...</option>
                 {materials.map(m => (
@@ -393,12 +386,6 @@ export default function Deliveries() {
         itemName={deliveries.find(m => m.id === editingId)?.delivery_id || 'this record'}
         isDeleting={isDeleting}
       />
-    
-    <Suspense fallback={null}><QRScanner
-      isOpen={showQRScanner}
-      onClose={() => setShowQRScanner(false)}
-      onScanned={handleQRScanned}
-    /></Suspense>
-</div>
+    </div>
   );
 }
