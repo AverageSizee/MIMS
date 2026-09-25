@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ColumnToggle from '../components/ColumnToggle';
-import QRSheetPrinter from '../components/QRSheetPrinter';
+import QRModal from '../components/QRModal';
 
 export default function Materials() {
   const { user, isManager } = useAuth();
@@ -42,7 +42,7 @@ export default function Materials() {
   const [activeSlicer, setActiveSlicer] = useState('All');
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
-  const [showQRSheet, setShowQRSheet] = useState(false);
+  const [qrMaterial, setQrMaterial] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
 
 
@@ -491,12 +491,11 @@ export default function Materials() {
       </Modal>
 
   
-    {showQRSheet && (
-      <QRSheetPrinter
-        materials={materials}
-        onClose={() => setShowQRSheet(false)}
-      />
-    )}
+    <QRModal
+      isOpen={!!qrMaterial}
+      onClose={() => setQrMaterial(null)}
+      material={qrMaterial}
+    />
 </div>
   );
 }
