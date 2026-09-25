@@ -230,7 +230,7 @@ export default function Suppliers() {
   return (<div className="space-y-6">
       <div className="flex justify-between items-center border-b pb-4">
         <h2 className="text-2xl font-bold text-gray-800 uppercase">Supplier Directory</h2>
-        <button onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData({name:'', contact_person:'', contact_information:'', address:'', materials_supplied:''}); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700">
+        <button onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData(initialFormState); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700">
           <Plus className="w-5 h-5 mr-1" /> {showForm ? 'Cancel' : 'Add Supplier'}
         </button>
       </div>
