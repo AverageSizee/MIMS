@@ -291,45 +291,44 @@ export default function Returns() {
           <>
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-900 text-white">
-                  <tr>
-                    {visibleColumns.includes('id_date') && <th className="px-6 py-3 font-medium">ID / Date</th>}
-                    {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
-                    {visibleColumns.includes('qty') && <th className="px-6 py-3 font-medium">Qty</th>}
-                    {visibleColumns.includes('condition') && <th className="px-6 py-3 font-medium">Condition</th>}
-                    {visibleColumns.includes('project_site') && <th className="px-6 py-3 font-medium">Project Site</th>}
-                    {visibleColumns.includes('personnel') && <th className="px-6 py-3 font-medium">Personnel</th>}
-                    {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
-                    {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
-                    <th className="px-6 py-3 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {returns.map((r) => (
-                    <tr key={r.id} className="hover:bg-gray-50">
-                      {visibleColumns.includes('id') && <td className="px-6 py-4">{r.return_id}</td>}
-                      {visibleColumns.includes('date') && <td className="px-6 py-4">{new Date(r.return_date).toLocaleDateString()}</td>}
-                      {visibleColumns.includes('site') && <td className="px-6 py-4">{r.project_site}</td>}
-                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{r.materials?.material_description}</td>}
-                      {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium text-green-600">+{r.quantity}</td>}
-                      {visibleColumns.includes('returned') && <td className="px-6 py-4">{r.returned_by}</td>}
-                      {visibleColumns.includes('received') && <td className="px-6 py-4">{r.received_by}</td>}
-                      {visibleColumns.includes('reason_condition') && <td className="px-6 py-4">{r.reason_condition}</td>}
-                      {visibleColumns.includes('cost') && <td className="px-6 py-4">\u20B1{Number(r.total_cost).toFixed(2)}</td>}
-                      {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{r.creator?.full_name || 'System'}</td>}
-                      {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{r.updater?.full_name || '-'}</td>}
-                      <td className="px-6 py-4 text-right">
-                        <button onClick={() => handleEdit(r)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                      </td>
+                  <thead className="bg-slate-900 text-white">
+                    <tr>
+                      {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">Return ID</th>}
+                      {visibleColumns.includes('date') && <th className="px-6 py-3 font-medium">Date</th>}
+                      {visibleColumns.includes('site') && <th className="px-6 py-3 font-medium">Project / Site</th>}
+                      {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
+                      {visibleColumns.includes('quantity') && <th className="px-6 py-3 font-medium">Qty</th>}
+                      {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Total Cost</th>}
+                      {visibleColumns.includes('returned') && <th className="px-6 py-3 font-medium">Returned By</th>}
+                      {visibleColumns.includes('received') && <th className="px-6 py-3 font-medium">Received By</th>}
+                      {visibleColumns.includes('reason_condition') && <th className="px-6 py-3 font-medium">Reason & Condition</th>}
+                      <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
-                  ))}
-                  {returns.length === 0 && (
-                    <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No returns recorded yet. Add at least 3 for your assignment.</td></tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {returns.map((r) => (
+                      <tr key={r.id} className="hover:bg-gray-50">
+                        {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{r.return_id}</td>}
+                        {visibleColumns.includes('date') && <td className="px-6 py-4">{new Date(r.return_date).toLocaleDateString()}</td>}
+                        {visibleColumns.includes('site') && <td className="px-6 py-4">{r.project_site}</td>}
+                        {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{r.materials?.material_description}</td>}
+                        {visibleColumns.includes('quantity') && <td className="px-6 py-4 font-medium text-green-600">+{r.quantity}</td>}
+                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">\u20B1{Number(r.total_cost).toFixed(2)}</td>}
+                        {visibleColumns.includes('returned') && <td className="px-6 py-4 text-gray-500">{r.returned_by}</td>}
+                        {visibleColumns.includes('received') && <td className="px-6 py-4 text-gray-500">{r.received_by}</td>}
+                        {visibleColumns.includes('reason_condition') && <td className="px-6 py-4 text-gray-500">{r.reason_condition}</td>}
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => handleEdit(r)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {returns.length === 0 && (
+                      <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No returns recorded yet. Add at least 3 for your assignment.</td></tr>
+                    )}
+                  </tbody>
+                </table>
             </div>
 
             {/* Mobile Card View */}

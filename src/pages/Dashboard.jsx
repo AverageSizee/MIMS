@@ -34,7 +34,7 @@ export default function Dashboard() {
   if (error) return <div className="text-red-500 bg-red-50 p-4 rounded-md">Error: {error}</div>;
 
   const totalItems = inventory.length;
-  const totalValuation = inventory.reduce((sum, item) => sum + (item.current_stock * item.unit_cost), 0);
+  const totalValuation = inventory.reduce((sum, item) => sum + (item.stock_balance * item.unit_cost), 0);
   
   const normalCount = inventory.filter(i => i.status === 'NORMAL').length;
   const reorderCount = inventory.filter(i => i.status === 'REORDER').length;
@@ -57,7 +57,7 @@ export default function Dashboard() {
   // Chart Data: Valuation by Category
   const catMap = {};
   inventory.forEach(item => {
-    const val = item.current_stock * item.unit_cost;
+    const val = item.stock_balance * item.unit_cost;
     if (val > 0) {
       catMap[item.category] = (catMap[item.category] || 0) + val;
     }
@@ -192,7 +192,7 @@ export default function Dashboard() {
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 font-bold text-gray-900">{item.material_id}</td>
                     <td className="px-6 py-4 text-gray-700">{item.material_description}</td>
-                    <td className="px-6 py-4 font-mono font-bold text-gray-800 text-right">{item.current_stock} <span className="text-xs text-gray-500">{item.unit_of_measurement}</span></td>
+                    <td className="px-6 py-4 font-mono font-bold text-gray-800 text-right">{item.stock_balance} <span className="text-xs text-gray-500">{item.unit_of_measurement}</span></td>
                     <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.reorder_level}</td>
                     <td className="px-6 py-4 font-mono text-gray-700 text-right">{item.target_level}</td>
                     <td className="px-6 py-4 text-center">
@@ -235,7 +235,7 @@ export default function Dashboard() {
                 <div className="grid grid-cols-3 gap-2 text-center text-sm bg-gray-50 p-2 rounded-md border border-gray-100">
                   <div className="flex flex-col">
                     <p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Current</p>
-                    <p className="font-mono font-bold text-gray-800">{item.current_stock} <span className="text-[10px] text-gray-500">{item.unit_of_measurement}</span></p>
+                    <p className="font-mono font-bold text-gray-800">{item.stock_balance} <span className="text-[10px] text-gray-500">{item.unit_of_measurement}</span></p>
                   </div>
                   <div className="flex flex-col border-l border-gray-200">
                     <p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Reorder</p>

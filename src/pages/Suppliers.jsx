@@ -283,40 +283,38 @@ export default function Suppliers() {
           <>
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-900 text-white">
-                  <tr>
-                    {visibleColumns.includes('id') && <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">ID</th>}
-                    {visibleColumns.includes('name') && <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Company</th>}
-                    {visibleColumns.includes('contact_person') && <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Contact Person</th>}
-                    {visibleColumns.includes('contact_info') && <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Contact Info</th>}
-                    {visibleColumns.includes('supplies') && <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Supplies</th>}
-                    {visibleColumns.includes('created_by') && <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Added By</th>}
-                    {visibleColumns.includes('updated_by') && <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider">Updated By</th>}
-                    <th className="px-6 py-4 font-semibold text-xs uppercase tracking-wider text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {suppliers.map((s) => (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{s.supplier_id}</td>}
-                      {visibleColumns.includes('name') && <td className="px-6 py-4 font-bold text-gray-900">{s.supplier_name}</td>}
-                      {visibleColumns.includes('contact_person') && <td className="px-6 py-4 text-gray-600">{s.contact_person}</td>}
-                      {visibleColumns.includes('contact_info') && <td className="px-6 py-4 text-gray-600">{s.contact_info}</td>}
-                      {visibleColumns.includes('supplies') && <td className="px-6 py-4 text-xs">{s.primary_materials_supplied}</td>}
-                      {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{s.creator?.full_name || 'System'}</td>}
-                      {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{s.updater?.full_name || '-'}</td>}
-                      <td className="px-6 py-4 text-right">
-                        <button onClick={() => handleEdit(s)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                      </td>
+                  <thead className="bg-slate-900 text-white">
+                    <tr>
+                      {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">Supplier ID</th>}
+                      {visibleColumns.includes('name') && <th className="px-6 py-3 font-medium">Supplier Name</th>}
+                      {visibleColumns.includes('contact_person') && <th className="px-6 py-3 font-medium">Contact Person</th>}
+                      {visibleColumns.includes('contact_info') && <th className="px-6 py-3 font-medium">Contact Info</th>}
+                      {visibleColumns.includes('address') && <th className="px-6 py-3 font-medium">Address / Location</th>}
+                      {visibleColumns.includes('materials') && <th className="px-6 py-3 font-medium">Primary Materials Supplied</th>}
+                      <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
-                  ))}
-                  {suppliers.length === 0 && (
-                    <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No suppliers added yet. Add at least 5 for your assignment.</td></tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {suppliers.map((s) => (
+                      <tr key={s.id} className="hover:bg-gray-50">
+                        {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{s.supplier_id}</td>}
+                        {visibleColumns.includes('name') && <td className="px-6 py-4 font-medium text-gray-900">{s.supplier_name}</td>}
+                        {visibleColumns.includes('contact_person') && <td className="px-6 py-4">{s.contact_person}</td>}
+                        {visibleColumns.includes('contact_info') && <td className="px-6 py-4 text-gray-600">{s.contact_info}</td>}
+                        {visibleColumns.includes('address') && <td className="px-6 py-4 text-gray-500">{s.address_location}</td>}
+                        {visibleColumns.includes('materials') && <td className="px-6 py-4"><span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">{s.primary_materials_supplied}</span></td>}
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => handleEdit(s)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {suppliers.length === 0 && (
+                      <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No suppliers recorded yet. Add at least 5 for your assignment.</td></tr>
+                    )}
+                  </tbody>
+                </table>
             </div>
 
             {/* Mobile Card View */}

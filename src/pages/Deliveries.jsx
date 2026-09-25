@@ -271,52 +271,42 @@ export default function Deliveries() {
           <>
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-900 text-white">
-                  <tr>
-                    {visibleColumns.includes('id_date') && <th className="px-6 py-3 font-medium">ID / Date</th>}
-                    {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
-                    {visibleColumns.includes('supplier') && <th className="px-6 py-3 font-medium">Supplier</th>}
-                    {visibleColumns.includes('qty') && <th className="px-6 py-3 font-medium">Qty</th>}
-                    {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Total Cost</th>}
-                    {visibleColumns.includes('po') && <th className="px-6 py-3 font-medium">PO / Receiver</th>}
-                    {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
-                    {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
-                    <th className="px-6 py-3 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {deliveries.map((d) => (
-                    <tr key={d.id} className="hover:bg-gray-50">
-                      {visibleColumns.includes('id_date') && (
-                        <td className="px-6 py-4">
-                          <div className="font-medium">{d.delivery_id}</div>
-                          <div className="text-xs text-gray-500">{d.delivery_date}</div>
-                        </td>
-                      )}
-                      {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{d.materials?.material_description}</td>}
-                      {visibleColumns.includes('supplier') && <td className="px-6 py-4 text-gray-600">{d.suppliers?.supplier_name}</td>}
-                      {visibleColumns.includes('qty') && <td className="px-6 py-4 font-medium">{d.quantity_delivered}</td>}
-                      {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(d.total_cost).toFixed(2)}</td>}
-                      {visibleColumns.includes('po') && (
-                        <td className="px-6 py-4 text-gray-600">
-                          <div>{d.purchase_order_number}</div>
-                          <div className="text-xs">{d.received_by}</div>
-                        </td>
-                      )}
-                      {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{d.creator?.full_name || 'System'}</td>}
-                      {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{d.updater?.full_name || '-'}</td>}
-                      <td className="px-6 py-4 text-right">
-                        <button onClick={() => handleEdit(d)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                      </td>
+                  <thead className="bg-slate-900 text-white">
+                    <tr>
+                      {visibleColumns.includes('id') && <th className="px-6 py-3 font-medium">Delivery ID</th>}
+                      {visibleColumns.includes('po_no') && <th className="px-6 py-3 font-medium">PO No.</th>}
+                      {visibleColumns.includes('date') && <th className="px-6 py-3 font-medium">Date</th>}
+                      {visibleColumns.includes('supplier') && <th className="px-6 py-3 font-medium">Supplier</th>}
+                      {visibleColumns.includes('material') && <th className="px-6 py-3 font-medium">Material</th>}
+                      {visibleColumns.includes('quantity') && <th className="px-6 py-3 font-medium">Qty</th>}
+                      {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Total Cost</th>}
+                      {visibleColumns.includes('received_by') && <th className="px-6 py-3 font-medium">Received By</th>}
+                      <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
-                  ))}
-                  {deliveries.length === 0 && (
-                    <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No deliveries recorded yet. Add at least 20 for your assignment.</td></tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {deliveries.map((d) => (
+                      <tr key={d.id} className="hover:bg-gray-50">
+                        {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{d.delivery_id}</td>}
+                        {visibleColumns.includes('po_no') && <td className="px-6 py-4 font-medium text-gray-600">{d.po_no}</td>}
+                        {visibleColumns.includes('date') && <td className="px-6 py-4">{new Date(d.delivery_date).toLocaleDateString()}</td>}
+                        {visibleColumns.includes('supplier') && <td className="px-6 py-4 text-gray-600">{d.suppliers?.supplier_name}</td>}
+                        {visibleColumns.includes('material') && <td className="px-6 py-4 font-medium text-gray-900">{d.materials?.material_description}</td>}
+                        {visibleColumns.includes('quantity') && <td className="px-6 py-4 font-medium text-blue-600">+{d.quantity}</td>}
+                        {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">\u20B1{Number(d.total_cost).toFixed(2)}</td>}
+                        {visibleColumns.includes('received_by') && <td className="px-6 py-4 text-gray-500">{d.received_by}</td>}
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => handleEdit(d)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {deliveries.length === 0 && (
+                      <tr><td colSpan={availableColumns.length + 1} className="px-6 py-8 text-center text-gray-500">No deliveries recorded yet. Add at least 20 for your assignment.</td></tr>
+                    )}
+                  </tbody>
+                </table>
             </div>
 
             {/* Mobile Card View */}
