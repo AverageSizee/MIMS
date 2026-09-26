@@ -64,7 +64,23 @@ export default function Materials() {
         ]);
         
         if (matRes.error) throw matRes.error;
-        setMaterials(matRes.data || []);
+        // also fetch suppliers to map them
+        const { data: allSuppliers } = await supabase.from('suppliers').select('primary_materials_supplied');
+        let materialsWithSuppliers = new Set();
+        if (allSuppliers) {
+          allSuppliers.forEach(s => {
+            if (s.primary_materials_supplied) {
+              s.primary_materials_supplied.split(', ').forEach(m => materialsWithSuppliers.add(m.trim()));
+            }
+          });
+        }
+        
+        const mappedMaterials = (matRes.data || []).map(m => ({
+          ...m,
+          has_supplier: materialsWithSuppliers.has(m.material_description)
+        }));
+        
+        setMaterials(mappedMaterials);
         if (!catRes.error) setCategoriesList(catRes.data || []);
     } catch (error) {
       console.error('Error fetching materials:', error.message);
@@ -381,9 +397,11 @@ export default function Materials() {
                           <button onClick={() => handleEdit(m)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                           </button>
-                          <button onClick={() => setQrMaterial(m)} title="View QR Code" className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+                          {m.has_supplier && (
+<button onClick={() => setQrMaterial(m)} title="View QR Code" className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3m0 3h3m-3 0v-3m-3 3h.01"/></svg>
                           </button>
+)}
                         </td>
                       </tr>
                     ))}
