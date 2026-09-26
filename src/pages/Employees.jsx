@@ -45,7 +45,13 @@ export default function Employees() {
         .order('full_name', { ascending: true });
       
       if (error) throw error;
-      setEmployees(data || []);
+      let _data = data || [];
+      _data.sort((a, b) => {
+          const timeA = a.updated_at ? new Date(a.updated_at).getTime() : new Date(a.created_at || 0).getTime();
+          const timeB = b.updated_at ? new Date(b.updated_at).getTime() : new Date(b.created_at || 0).getTime();
+          return timeB - timeA;
+      });
+      setEmployees(_data);
     } catch (error) {
       console.error('Error fetching employees:', error.message);
     } finally {
@@ -115,7 +121,8 @@ export default function Employees() {
         const { error } = await supabase.from('profiles').update({
           full_name: formData.full_name.trim(),
           role: formData.role,
-          requires_password_change: formData.force_reset
+          requires_password_change: formData.force_reset,
+          updated_at: new Date().toISOString()
         }).eq('id', editingId);
         
         if (error) throw error;
@@ -138,8 +145,9 @@ export default function Employees() {
         // Immediately update the profile to apply the force_reset checkbox preference
         if (data?.user?.id) {
           await supabase.from('profiles').update({
-            requires_password_change: formData.force_reset
-          }).eq('id', data.user.id);
+            requires_password_change: formData.force_reset,
+          updated_at: new Date().toISOString()
+        }).eq('id', data.user.id);
         }
         alert(`Account created successfully for ${formData.full_name.trim()}!`);
       }

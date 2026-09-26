@@ -100,7 +100,14 @@ export default function Returns() {
         supabase.from('materials').select('id, material_id, material_description, unit_cost')
       ]);
       
-      setReturns(retRes.data || []);
+      let _data = retRes.data || [];
+      _data.sort((a, b) => {
+          const timeA = a.updated_at ? new Date(a.updated_at).getTime() : new Date(a.created_at || 0).getTime();
+          const timeB = b.updated_at ? new Date(b.updated_at).getTime() : new Date(b.created_at || 0).getTime();
+          if (timeA === timeB) return b.return_id?.localeCompare(a.return_id);
+          return timeB - timeA;
+      });
+      setReturns(_data);
       setMaterials(matRes.data || []);
     } catch (error) {
       console.error('Error fetching returns data:', error.message);
@@ -172,7 +179,8 @@ export default function Returns() {
       if (editingId) {
         const { error } = await supabase.from('returns').update({
           ...payload,
-          updated_by: user.id
+          updated_by: user.id,
+          updated_at: new Date().toISOString()
         }).eq('id', editingId);
         if (error) throw error;
       } else {

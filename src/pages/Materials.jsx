@@ -80,6 +80,12 @@ export default function Materials() {
           has_supplier: materialsWithSuppliers.has(m.material_description)
         }));
         
+        mappedMaterials.sort((a, b) => {
+            const timeA = a.updated_at ? new Date(a.updated_at).getTime() : new Date(a.created_at || 0).getTime();
+            const timeB = b.updated_at ? new Date(b.updated_at).getTime() : new Date(b.created_at || 0).getTime();
+            if (timeA === timeB) return b.material_id?.localeCompare(a.material_id);
+            return timeB - timeA;
+        });
         setMaterials(mappedMaterials);
         if (!catRes.error) setCategoriesList(catRes.data || []);
     } catch (error) {
@@ -123,7 +129,8 @@ export default function Materials() {
       if (editingId) {
         const { error } = await supabase.from('materials').update({
           ...payload,
-          updated_by: user.id
+          updated_by: user.id,
+          updated_at: new Date().toISOString()
         }).eq('id', editingId);
         if (error) throw error;
       } else {

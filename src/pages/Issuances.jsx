@@ -100,7 +100,14 @@ export default function Issuances() {
         supabase.from('materials').select('id, material_id, material_description, unit_cost')
       ]);
       
-      setIssuances(issRes.data || []);
+      let _data = issRes.data || [];
+      _data.sort((a, b) => {
+          const timeA = a.updated_at ? new Date(a.updated_at).getTime() : new Date(a.created_at || 0).getTime();
+          const timeB = b.updated_at ? new Date(b.updated_at).getTime() : new Date(b.created_at || 0).getTime();
+          if (timeA === timeB) return b.issuance_id?.localeCompare(a.issuance_id);
+          return timeB - timeA;
+      });
+      setIssuances(_data);
       setMaterials(matRes.data || []);
     } catch (error) {
       console.error('Error fetching issuances data:', error.message);
@@ -161,7 +168,8 @@ export default function Issuances() {
       if (editingId) {
         const { error } = await supabase.from('issuances').update({
           ...payload,
-          updated_by: user.id
+          updated_by: user.id,
+          updated_at: new Date().toISOString()
         }).eq('id', editingId);
         if (error) throw error;
       } else {

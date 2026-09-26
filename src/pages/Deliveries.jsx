@@ -104,7 +104,14 @@ export default function Deliveries() {
         supabase.from('suppliers').select('id, supplier_name')
       ]);
       
-      setDeliveries(delRes.data || []);
+      let _data = delRes.data || [];
+      _data.sort((a, b) => {
+          const timeA = a.updated_at ? new Date(a.updated_at).getTime() : new Date(a.created_at || 0).getTime();
+          const timeB = b.updated_at ? new Date(b.updated_at).getTime() : new Date(b.created_at || 0).getTime();
+          if (timeA === timeB) return b.delivery_id?.localeCompare(a.delivery_id);
+          return timeB - timeA;
+      });
+      setDeliveries(_data);
       setMaterials(matRes.data || []);
       setSuppliers(supRes.data || []);
     } catch (error) {
@@ -184,7 +191,8 @@ export default function Deliveries() {
       if (editingId) {
         const { error } = await supabase.from('deliveries').update({
           ...payload,
-          updated_by: user.id
+          updated_by: user.id,
+          updated_at: new Date().toISOString()
         }).eq('id', editingId);
         if (error) throw error;
       } else {

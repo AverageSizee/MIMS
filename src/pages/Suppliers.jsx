@@ -81,7 +81,14 @@ export default function Suppliers() {
       if (suppRes.error) throw suppRes.error;
       if (matRes.error) throw matRes.error;
       
-      setSuppliers(suppRes.data || []);
+      let _data = suppRes.data || [];
+      _data.sort((a, b) => {
+          const timeA = a.updated_at ? new Date(a.updated_at).getTime() : new Date(a.created_at || 0).getTime();
+          const timeB = b.updated_at ? new Date(b.updated_at).getTime() : new Date(b.created_at || 0).getTime();
+          if (timeA === timeB) return b.supplier_id?.localeCompare(a.supplier_id);
+          return timeB - timeA;
+      });
+      setSuppliers(_data);
       setAvailableMaterials((matRes.data || []).map(m => m.material_description));
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -125,7 +132,8 @@ export default function Suppliers() {
     try {
       if (editingId) {
         const { error } = await supabase.from('suppliers').update({
-          ...formData, updated_by: user.id
+          ...formData, updated_by: user.id,
+          updated_at: new Date().toISOString()
         }).eq('id', editingId);
         if (error) throw error;
       } else {
