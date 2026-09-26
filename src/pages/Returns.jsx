@@ -370,7 +370,7 @@ export default function Returns() {
                         {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(r.total_cost).toFixed(2)}</td>}
                         {visibleColumns.includes('returned') && <td className="px-6 py-4 text-gray-500">{r.returned_by}</td>}
                         {visibleColumns.includes('received') && <td className="px-6 py-4 text-gray-500">{r.received_by}</td>}
-                        {visibleColumns.includes('reason_condition') && <td className="px-6 py-4 text-gray-500">{r.reason_condition}</td>}
+                        {visibleColumns.includes('reason_condition') && <td className="px-6 py-4 text-gray-500">{r.reason_condition_condition}</td>}
                         <td className="px-6 py-4 text-right">
                           <button onClick={() => handleEdit(r)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
@@ -428,14 +428,14 @@ export default function Returns() {
                       <div>
                         <p className="text-xs text-gray-500 mb-1">Condition</p>
                         <span className={`px-2 py-1 rounded text-xs ${
-                          r.condition === 'Good' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          r.reason_condition_condition === 'Good' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
-                          {r.condition}
+                          {r.reason_condition_condition}
                         </span>
                       </div>
                     )}
                     {(visibleColumns.includes('site') || visibleColumns.includes('reason_condition')) && (
-                      <div className="col-span-2"><p className="text-xs text-gray-500">Project / Site (Reason)</p><p className="font-medium text-gray-800">{r.project_site}</p><p className="text-xs text-gray-500">{r.reason}</p></div>
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Project / Site (Reason)</p><p className="font-medium text-gray-800">{r.project_site}</p><p className="text-xs text-gray-500">{r.reason_condition}</p></div>
                     )}
                     {visibleColumns.includes('returned') && (
                       <div><p className="text-xs text-gray-500">Returned By</p><p className="font-medium text-gray-800">{r.returned_by}</p></div>
