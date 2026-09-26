@@ -260,6 +260,9 @@ export default function Returns() {
           <Plus className="w-4 h-4 mr-2" />
           {showForm ? 'Cancel' : 'Record Return'}
         </button>
+        <button onClick={() => setShowScanner(true)} title="Scan QR Code to auto-fill form" className="bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-900 transition-colors text-sm font-medium ml-2">
+          📷 Scan QR
+        </button>
       </div>
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} title={editingId ? 'Edit Record' : 'Add New Record'}>

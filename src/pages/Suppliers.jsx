@@ -365,6 +365,9 @@ export default function Suppliers() {
                           <button onClick={() => handleEdit(s)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                           </button>
+                          <button onClick={() => setQrSupplier(s)} title="View QR Codes" className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+                              <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3m0 3h3m-3 0v-3m-3 3h.01"/></svg>
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -402,6 +405,9 @@ export default function Suppliers() {
                     <button onClick={() => handleEdit(s)} className="p-2 text-blue-600 bg-blue-50 rounded-lg shrink-0 ml-2">
                       <Edit2 className="w-4 h-4" />
                     </button>
+                      <button onClick={() => setQrSupplier(s)} className="p-2 text-purple-600 bg-purple-50 rounded-lg shrink-0 ml-2">
+                        <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3m0 3h3m-3 0v-3m-3 3h.01"/></svg>
+                      </button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 text-sm bg-gray-50 p-3 rounded-md border border-gray-100">
                     {visibleColumns.includes('contact_person') && (
