@@ -75,7 +75,7 @@ export default function Suppliers() {
   async function fetchData() {
     try {
       const [suppRes, matRes] = await Promise.all([
-        supabase.from('suppliers').select('*').order('supplier_id', { ascending: false }),
+        supabase.from('suppliers').select('*, creator:profiles!created_by(full_name), updater:profiles!updated_by(full_name)').order('supplier_id', { ascending: false }),
         supabase.from('materials').select('material_description').order('material_description')
       ]);
       if (suppRes.error) throw suppRes.error;
@@ -358,6 +358,8 @@ export default function Suppliers() {
                       {visibleColumns.includes('contact_info') && <th className="px-6 py-3 font-medium">Contact Info</th>}
                       {visibleColumns.includes('address') && <th className="px-6 py-3 font-medium">Address / Location</th>}
                       {visibleColumns.includes('materials') && <th className="px-6 py-3 font-medium">Primary Materials Supplied</th>}
+                      {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                      {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
                       <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>

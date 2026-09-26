@@ -96,7 +96,7 @@ export default function Returns() {
     setLoading(true);
     try {
       const [retRes, matRes] = await Promise.all([
-        supabase.from('returns').select('*, materials(material_description)').order('return_id', { ascending: false }),
+        supabase.from('returns').select('*, materials(material_description), creator:profiles!created_by(full_name), updater:profiles!updated_by(full_name)').order('return_id', { ascending: false }),
         supabase.from('materials').select('id, material_id, material_description, unit_cost')
       ]);
       
@@ -354,6 +354,8 @@ export default function Returns() {
                       {visibleColumns.includes('returned') && <th className="px-6 py-3 font-medium">Returned By</th>}
                       {visibleColumns.includes('received') && <th className="px-6 py-3 font-medium">Received By</th>}
                       {visibleColumns.includes('reason_condition') && <th className="px-6 py-3 font-medium">Reason & Condition</th>}
+                      {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                      {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
                       <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>

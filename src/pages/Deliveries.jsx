@@ -99,7 +99,7 @@ export default function Deliveries() {
     setLoading(true);
     try {
       const [delRes, matRes, supRes] = await Promise.all([
-        supabase.from('deliveries').select('*, materials(material_description), suppliers(supplier_name)').order('delivery_id', { ascending: false }),
+        supabase.from('deliveries').select('*, materials(material_description), suppliers(supplier_name), creator:profiles!created_by(full_name), updater:profiles!updated_by(full_name)').order('delivery_id', { ascending: false }),
         supabase.from('materials').select('id, material_id, material_description, unit_cost'),
         supabase.from('suppliers').select('id, supplier_name')
       ]);

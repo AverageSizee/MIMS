@@ -59,7 +59,7 @@ export default function Materials() {
   async function fetchMaterials() {
     try {
       const [matRes, catRes] = await Promise.all([
-          supabase.from('inventory_dashboard').select('*').order('material_id', { ascending: false }),
+          supabase.from('inventory_dashboard').select('*, creator:profiles!created_by(full_name), updater:profiles!updated_by(full_name)').order('material_id', { ascending: false }),
           supabase.from('categories').select('name').order('name')
         ]);
         
@@ -386,6 +386,8 @@ export default function Materials() {
                       {visibleColumns.includes('levels') && <th className="px-6 py-3 font-medium">Reorder / Target</th>}
                       {visibleColumns.includes('stock') && <th className="px-6 py-3 font-medium">Stock Balance</th>}
                       {visibleColumns.includes('status') && <th className="px-6 py-3 font-medium">Status</th>}
+                      {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                      {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
                       <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>

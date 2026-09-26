@@ -96,7 +96,7 @@ export default function Issuances() {
     setLoading(true);
     try {
       const [issRes, matRes] = await Promise.all([
-        supabase.from('issuances').select('*, materials(material_description)').order('issuance_id', { ascending: false }),
+        supabase.from('issuances').select('*, materials(material_description), creator:profiles!created_by(full_name), updater:profiles!updated_by(full_name)').order('issuance_id', { ascending: false }),
         supabase.from('materials').select('id, material_id, material_description, unit_cost')
       ]);
       
@@ -343,6 +343,8 @@ export default function Issuances() {
                       {visibleColumns.includes('requested') && <th className="px-6 py-3 font-medium">Requested By</th>}
                       {visibleColumns.includes('released') && <th className="px-6 py-3 font-medium">Released By</th>}
                       {visibleColumns.includes('purpose') && <th className="px-6 py-3 font-medium">Purpose</th>}
+                      {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                      {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
                       <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
