@@ -152,6 +152,21 @@ export default function Deliveries() {
       const unit_cost = selectedMat ? Number(selectedMat.unit_cost) : 0;
       const quantity = parseInt(formData.quantity) || 0;
       
+      
+      let finalPhotoUrl = formData.photo_url;
+      if (formData.file) {
+        const fileExt = formData.file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `deliveries/${fileName}`;
+        const { error: uploadError } = await supabase.storage.from('attachments').upload(filePath, formData.file);
+        if (uploadError) {
+            console.error('Upload error:', uploadError);
+            alert('Upload failed: Please ensure the "attachments" bucket exists and is public.');
+            throw uploadError;
+        }
+        const { data: { publicUrl } } = supabase.storage.from('attachments').getPublicUrl(filePath);
+        finalPhotoUrl = publicUrl;
+      }
       const payload = {
         po_no: formData.po_no,
         delivery_date: formData.delivery_date,
@@ -160,7 +175,8 @@ export default function Deliveries() {
         quantity: quantity,
         unit_cost: unit_cost,
         total_cost: quantity * unit_cost,
-        received_by: formData.received_by
+        received_by: formData.received_by,
+        photo_url: finalPhotoUrl
       };
 
       if (editingId) {
