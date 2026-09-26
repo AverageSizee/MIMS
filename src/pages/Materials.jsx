@@ -449,7 +449,7 @@ export default function Materials() {
                     {visibleColumns.includes('category') && (
                       <div><p className="text-xs text-gray-500">Category</p><p className="font-medium text-gray-800">{m.category}</p></div>
                     )}
-                    {visibleColumns.includes('uom') && (
+                    {visibleColumns.includes('unit') && (
                       <div><p className="text-xs text-gray-500">UoM</p><p className="font-medium text-gray-800">{m.unit}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (

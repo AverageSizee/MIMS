@@ -406,7 +406,7 @@ export default function Returns() {
                 <div key={r.id} className="p-4 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      {visibleColumns.includes('id_date') && (
+                      {(visibleColumns.includes('id') || visibleColumns.includes('date')) && (
                         <>
                           <p className="font-bold text-gray-900 text-lg">{r.return_id}</p>
                           <p className="text-xs text-gray-500">{r.return_date}</p>
@@ -421,10 +421,10 @@ export default function Returns() {
                     {visibleColumns.includes('material') && (
                       <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{r.materials?.material_description}</p></div>
                     )}
-                    {visibleColumns.includes('qty') && (
+                    {visibleColumns.includes('quantity') && (
                       <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-green-600">+{r.quantity}</p></div>
                     )}
-                    {visibleColumns.includes('condition') && (
+                    {visibleColumns.includes('reason_condition') && (
                       <div>
                         <p className="text-xs text-gray-500 mb-1">Condition</p>
                         <span className={`px-2 py-1 rounded text-xs ${
@@ -434,13 +434,13 @@ export default function Returns() {
                         </span>
                       </div>
                     )}
-                    {visibleColumns.includes('project_site') && (
+                    {(visibleColumns.includes('site') || visibleColumns.includes('reason_condition')) && (
                       <div className="col-span-2"><p className="text-xs text-gray-500">Project / Site (Reason)</p><p className="font-medium text-gray-800">{r.project_site}</p><p className="text-xs text-gray-500">{r.reason}</p></div>
                     )}
-                    {visibleColumns.includes('personnel') && (
+                    {visibleColumns.includes('returned') && (
                       <div><p className="text-xs text-gray-500">Returned By</p><p className="font-medium text-gray-800">{r.returned_by}</p></div>
                     )}
-                    {visibleColumns.includes('personnel') && (
+                    {visibleColumns.includes('received') && (
                       <div><p className="text-xs text-gray-500">Received By</p><p className="font-medium text-gray-800">{r.received_by}</p></div>
                     )}
                     {visibleColumns.includes('created_by') && (

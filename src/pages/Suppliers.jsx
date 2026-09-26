@@ -427,7 +427,7 @@ export default function Suppliers() {
                     {visibleColumns.includes('contact_info') && (
                       <div><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Contact Info</p><p className="font-medium text-gray-800">{s.contact_info}</p></div>
                     )}
-                    {visibleColumns.includes('supplies') && (
+                    {visibleColumns.includes('materials') && (
                       <div className="sm:col-span-2"><p className="text-[9px] text-gray-500 font-bold uppercase mb-1">Supplies</p><p className="font-medium text-gray-800 text-xs">{s.primary_materials_supplied}</p></div>
                     )}
                     {visibleColumns.includes('created_by') && (

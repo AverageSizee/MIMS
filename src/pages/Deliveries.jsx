@@ -464,7 +464,7 @@ export default function Deliveries() {
                 <div key={d.id} className="p-4 space-y-3 cursor-pointer" onClick={() => setSelectedRecord(d)}>
                   <div className="flex justify-between items-start">
                     <div>
-                      {visibleColumns.includes('id_date') && (
+                      {(visibleColumns.includes('id') || visibleColumns.includes('date')) && (
                         <>
                           <p className="font-bold text-gray-900 text-lg">{d.delivery_id}</p>
                           <p className="text-xs text-gray-500">{d.delivery_date}</p>
@@ -482,16 +482,16 @@ export default function Deliveries() {
                     {visibleColumns.includes('supplier') && (
                       <div className="col-span-2"><p className="text-xs text-gray-500">Supplier</p><p className="font-medium text-gray-800">{d.suppliers?.supplier_name}</p></div>
                     )}
-                    {visibleColumns.includes('qty') && (
-                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-gray-800">{d.quantity_delivered}</p></div>
+                    {visibleColumns.includes('quantity') && (
+                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-gray-800">{d.quantity}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (
                       <div><p className="text-xs text-gray-500">Total Cost</p><p className="font-medium text-gray-800">₱{Number(d.total_cost).toFixed(2)}</p></div>
                     )}
-                    {visibleColumns.includes('po') && (
-                      <div><p className="text-xs text-gray-500">PO Number</p><p className="font-medium text-gray-800">{d.purchase_order_number}</p></div>
+                    {visibleColumns.includes('po_no') && (
+                      <div><p className="text-xs text-gray-500">PO No.</p><p className="font-medium text-gray-800">{d.po_no || '-'}</p></div>
                     )}
-                    {visibleColumns.includes('po') && (
+                    {visibleColumns.includes('received_by') && (
                       <div><p className="text-xs text-gray-500">Received By</p><p className="font-medium text-gray-800">{d.received_by}</p></div>
                     )}
                     {visibleColumns.includes('created_by') && (

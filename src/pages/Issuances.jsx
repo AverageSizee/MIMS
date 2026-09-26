@@ -395,7 +395,7 @@ export default function Issuances() {
                 <div key={i.id} className="p-4 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      {visibleColumns.includes('id_date') && (
+                      {(visibleColumns.includes('id') || visibleColumns.includes('date')) && (
                         <>
                           <p className="font-bold text-gray-900 text-lg">{i.issuance_id}</p>
                           <p className="text-xs text-gray-500">{i.issuance_date}</p>
@@ -410,19 +410,19 @@ export default function Issuances() {
                     {visibleColumns.includes('material') && (
                       <div className="col-span-2"><p className="text-xs text-gray-500">Material</p><p className="font-medium text-gray-800">{i.materials?.material_description}</p></div>
                     )}
-                    {visibleColumns.includes('qty') && (
-                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-red-600">-{i.quantity_issued}</p></div>
+                    {visibleColumns.includes('quantity') && (
+                      <div><p className="text-xs text-gray-500">Quantity</p><p className="font-medium text-red-600">-{i.quantity}</p></div>
                     )}
                     {visibleColumns.includes('cost') && (
                       <div><p className="text-xs text-gray-500">Total Cost</p><p className="font-medium text-gray-800">₱{Number(i.total_cost).toFixed(2)}</p></div>
                     )}
-                    {visibleColumns.includes('project_site') && (
+                    {(visibleColumns.includes('site') || visibleColumns.includes('purpose')) && (
                       <div className="col-span-2"><p className="text-xs text-gray-500">Project / Site (Purpose)</p><p className="font-medium text-gray-800">{i.project_site}</p><p className="text-xs text-gray-500">{i.purpose}</p></div>
                     )}
-                    {visibleColumns.includes('personnel') && (
+                    {visibleColumns.includes('requested') && (
                       <div><p className="text-xs text-gray-500">Requested By</p><p className="font-medium text-gray-800">{i.requested_by}</p></div>
                     )}
-                    {visibleColumns.includes('personnel') && (
+                    {visibleColumns.includes('released') && (
                       <div><p className="text-xs text-gray-500">Released By</p><p className="font-medium text-gray-800">{i.released_by}</p></div>
                     )}
                     {visibleColumns.includes('created_by') && (
