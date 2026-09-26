@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import Modal from '../components/Modal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
-import { Plus, Loader2, Edit2 , Trash2 } from 'lucide-react';
+import { Plus, Loader2, Edit2, Trash2, ImageIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ColumnToggle from '../components/ColumnToggle';
 
@@ -22,6 +22,7 @@ export default function Deliveries() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [photoModalUrl, setPhotoModalUrl] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
 
   const handleScanResult = (resultText) => {
@@ -51,7 +52,8 @@ export default function Deliveries() {
     { id: 'material', label: 'Material' },
     { id: 'quantity', label: 'Qty' },
     { id: 'cost', label: 'Total Cost' },
-    { id: 'received_by', label: 'Received By' }
+    { id: 'received_by', label: 'Received By' },
+    { id: 'photo_url', label: 'Attachment' }
   ];
   if (isManager) {
     availableColumns.push({ id: 'created_by', label: 'Added By' });
@@ -69,7 +71,9 @@ export default function Deliveries() {
     material_id: '',
     supplier_id: '',
     quantity: '',
-    received_by: ''
+    received_by: '',
+    photo_url: '',
+    file: null
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -130,7 +134,9 @@ export default function Deliveries() {
       material_id: delivery.material_id || '',
       supplier_id: delivery.supplier_id || '',
       quantity: delivery.quantity || '',
-      received_by: delivery.received_by || ''
+      received_by: delivery.received_by || '',
+      photo_url: delivery.photo_url || '',
+      file: null
     });
     setEditingId(delivery.id);
     setShowForm(true);
