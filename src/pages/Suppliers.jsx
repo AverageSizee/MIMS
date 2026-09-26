@@ -51,6 +51,7 @@ export default function Suppliers() {
   const [extraWarnings, setExtraWarnings] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [qrSupplier, setQrSupplier] = useState(null);
   const [locating, setLocating] = useState(false);
   
   const initialFormState = { supplier_name: '', contact_person: '', contact_info: '', address_location: '', primary_materials_supplied: '' };

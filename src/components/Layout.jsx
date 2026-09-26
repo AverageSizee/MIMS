@@ -10,7 +10,6 @@ export default function Layout() {
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Scan QR', href: '/scan', icon: ScanLine },
     { name: 'Materials', href: '/materials', icon: Package },
     { name: 'Suppliers', href: '/suppliers', icon: Users },
     { name: 'Deliveries', href: '/deliveries', icon: Truck },

@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
+const QRScannerModal = lazy(() => import('../components/QRScannerModal'));
+
 import { useSearchParams } from 'react-router-dom';
 import Modal from '../components/Modal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
@@ -19,6 +22,24 @@ export default function Deliveries() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [showScanner, setShowScanner] = useState(false);
+
+  const handleScanResult = (resultText) => {
+      setShowScanner(false);
+      try {
+          const data = JSON.parse(resultText);
+          const mat = materials.find(m => m.material_description === data.m);
+          setFormData(prev => ({
+              ...prev,
+              supplier_id: data.s || prev.supplier_id,
+              material_id: mat ? mat.id : prev.material_id
+          }));
+          setShowForm(true);
+      } catch (e) {
+          alert('Invalid QR Code format.');
+      }
+  };
+
 
   // Column management
   const availableColumns = [
