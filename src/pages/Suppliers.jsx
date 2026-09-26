@@ -1,3 +1,4 @@
+import SupplierQRModal from '../components/SupplierQRModal';
 import { useEffect, useState } from 'react';
 import Modal from '../components/Modal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
@@ -453,6 +454,8 @@ export default function Suppliers() {
         extraWarnings={extraWarnings}
         isDeleting={isDeleting}
       />
+    
+      <SupplierQRModal isOpen={!!qrSupplier} onClose={() => setQrSupplier(null)} supplier={qrSupplier} />
     </div>
   );
 }

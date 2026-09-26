@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import React, { Suspense, lazy } from 'react';
 const QRScannerModal = lazy(() => import('../components/QRScannerModal'));
+import { useState, useEffect } from 'react';
 
 import { useSearchParams } from 'react-router-dom';
 import Modal from '../components/Modal';
@@ -456,6 +456,10 @@ export default function Returns() {
         itemName={returns.find(m => m.id === editingId)?.return_id || 'this record'}
         isDeleting={isDeleting}
       />
+    
+      <Suspense fallback={null}>
+        {showScanner && <QRScannerModal isOpen={showScanner} onClose={() => setShowScanner(false)} onScanned={handleScanResult} />}
+      </Suspense>
     </div>
   );
 }
