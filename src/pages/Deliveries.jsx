@@ -400,6 +400,9 @@ export default function Deliveries() {
                       {visibleColumns.includes('quantity') && <th className="px-6 py-3 font-medium">Qty</th>}
                       {visibleColumns.includes('cost') && <th className="px-6 py-3 font-medium">Total Cost</th>}
                       {visibleColumns.includes('received_by') && <th className="px-6 py-3 font-medium">Received By</th>}
+                      {visibleColumns.includes('photo_url') && <th className="px-6 py-3 font-medium">Attachment</th>}
+                      {visibleColumns.includes('created_by') && <th className="px-6 py-3 font-medium">Added By</th>}
+                      {visibleColumns.includes('updated_by') && <th className="px-6 py-3 font-medium">Updated By</th>}
                       <th className="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
@@ -414,6 +417,18 @@ export default function Deliveries() {
                         {visibleColumns.includes('quantity') && <td className="px-6 py-4 font-medium text-blue-600">+{d.quantity}</td>}
                         {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(d.total_cost).toFixed(2)}</td>}
                         {visibleColumns.includes('received_by') && <td className="px-6 py-4 text-gray-500">{d.received_by}</td>}
+                        {visibleColumns.includes('photo_url') && <td className="px-6 py-4">
+                          {d.photo_url ? (
+                            <span className="flex items-center text-blue-600">
+                              <ImageIcon className="w-4 h-4 mr-1" />
+                              <span className="text-sm">{d.photo_url.split(',').filter(Boolean).length} File(s)</span>
+                            </span>
+                          ) : (
+                            <span className="text-gray-400 text-sm">None</span>
+                          )}
+                        </td>}
+                        {visibleColumns.includes('created_by') && <td className="px-6 py-4 text-gray-500 italic">{d.creator?.full_name || 'System'}</td>}
+                        {visibleColumns.includes('updated_by') && <td className="px-6 py-4 text-gray-500 italic">{d.updater?.full_name || '-'}</td>}
                         <td className="px-6 py-4 text-right">
                           <button onClick={(e) => { e.stopPropagation(); handleEdit(d); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
@@ -484,6 +499,16 @@ export default function Deliveries() {
                     )}
                     {visibleColumns.includes('updated_by') && (
                       <div><p className="text-xs text-gray-500">Updated By</p><p className="font-medium text-gray-600 italic">{d.updater?.full_name || '-'}</p></div>
+                    )}
+                    {visibleColumns.includes('photo_url') && (
+                      <div className="col-span-2"><p className="text-xs text-gray-500">Attachment</p><div className="font-medium text-gray-800">
+                          {d.photo_url ? (
+                            <span className="flex items-center text-blue-600 mt-1">
+                              <ImageIcon className="w-4 h-4 mr-1" />
+                              <span className="text-sm">{d.photo_url.split(',').filter(Boolean).length} File(s)</span>
+                            </span>
+                          ) : <span className="text-gray-400 text-sm">None</span>}
+                      </div></div>
                     )}
                   </div>
                 </div>
