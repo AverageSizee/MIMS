@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Truck, ArrowRightLeft, Undo2, Users, LogOut, UserCircle, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, Truck, ArrowRightLeft, Undo2, Users, LogOut, UserCircle, Menu, X, ScanLine } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Layout() {
@@ -10,6 +10,7 @@ export default function Layout() {
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Scan QR', href: '/scan', icon: ScanLine },
     { name: 'Materials', href: '/materials', icon: Package },
     { name: 'Suppliers', href: '/suppliers', icon: Users },
     { name: 'Deliveries', href: '/deliveries', icon: Truck },

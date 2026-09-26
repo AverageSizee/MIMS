@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Modal from '../components/Modal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
@@ -8,6 +9,7 @@ import ColumnToggle from '../components/ColumnToggle';
 
 export default function Deliveries() {
   const { user, isManager } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [deliveries, setDeliveries] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
@@ -53,13 +55,25 @@ export default function Deliveries() {
   useEffect(() => {
     fetchData();
   }, []);
+  useEffect(() => {
+    const matParam = searchParams.get('material');
+    if (matParam && materials.length > 0) {
+      const matched = materials.find(m => m.material_id === matParam);
+      if (matched) {
+         setFormData(prev => ({ ...prev, material_id: matched.id }));
+         setShowForm(true);
+         setSearchParams({});
+      }
+    }
+  }, [searchParams, materials, setSearchParams]);
+
 
   async function fetchData() {
     setLoading(true);
     try {
       const [delRes, matRes, supRes] = await Promise.all([
         supabase.from('deliveries').select('*, materials(material_description), suppliers(supplier_name)').order('created_at', { ascending: false }),
-        supabase.from('materials').select('id, material_description, unit_cost'),
+        supabase.from('materials').select('id, material_id, material_description, unit_cost'),
         supabase.from('suppliers').select('id, supplier_name')
       ]);
       

@@ -10,6 +10,9 @@ import Returns from './pages/Returns';
 import Login from './pages/Login';
 import Employees from './pages/Employees';
 import ForcePasswordChange from './pages/ForcePasswordChange';
+import React, { Suspense } from 'react';
+
+const Scan = React.lazy(() => import('./pages/Scan'));
 
 function AuthRoute({ children }) {
   const { user, profile } = useAuth();
@@ -41,6 +44,7 @@ function AppRoutes() {
         <Route path="deliveries" element={<Deliveries />} />
         <Route path="issuances" element={<Issuances />} />
         <Route path="returns" element={<Returns />} />
+        <Route path="scan" element={<Suspense fallback={<div className="p-8 text-center text-gray-500">Loading Camera...</div>}><Scan /></Suspense>} />
         <Route path="employees" element={<AdminRoute><Employees /></AdminRoute>} />
       </Route>
     </Routes>
