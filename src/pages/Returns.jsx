@@ -11,7 +11,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ColumnToggle from '../components/ColumnToggle';
 
 export default function Returns() {
-  const { user, isManager } = useAuth();
+  const { user, profile, isManager } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [returns, setReturns] = useState([]);
   const [materials, setMaterials] = useState([]);
@@ -31,7 +31,8 @@ export default function Returns() {
           setFormData(prev => ({
               ...prev,
               supplier_id: data.s || prev.supplier_id,
-              material_id: mat ? mat.id : prev.material_id
+              material_id: mat ? mat.id : prev.material_id,
+              received_by: profile?.full_name || prev.received_by
           }));
           setShowForm(true);
       } catch (e) {

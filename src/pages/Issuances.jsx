@@ -11,7 +11,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ColumnToggle from '../components/ColumnToggle';
 
 export default function Issuances() {
-  const { user, isManager } = useAuth();
+  const { user, profile, isManager } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [issuances, setIssuances] = useState([]);
   const [materials, setMaterials] = useState([]);
@@ -31,7 +31,8 @@ export default function Issuances() {
           setFormData(prev => ({
               ...prev,
               supplier_id: data.s || prev.supplier_id,
-              material_id: mat ? mat.id : prev.material_id
+              material_id: mat ? mat.id : prev.material_id,
+              released_by: profile?.full_name || prev.released_by
           }));
           setShowForm(true);
       } catch (e) {
