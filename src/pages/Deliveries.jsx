@@ -22,6 +22,7 @@ export default function Deliveries() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const [photoModalUrl, setPhotoModalUrl] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
 
@@ -60,7 +61,7 @@ export default function Deliveries() {
     availableColumns.push({ id: 'updated_by', label: 'Updated By' });
   }
 
-  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at'].includes(id)));
+  const [visibleColumns, setVisibleColumns] = useState(availableColumns.map(c => c.id).filter(id => !['created_by', 'updated_by', 'created_at', 'photo_url'].includes(id)));
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -336,7 +337,7 @@ export default function Deliveries() {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {paginatedData.map((d) => (
-                      <tr key={d.id} className="hover:bg-gray-50">
+                      <tr key={d.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedRecord(d)}>
                         {visibleColumns.includes('id') && <td className="px-6 py-4 font-medium">{d.delivery_id}</td>}
                         {visibleColumns.includes('po_no') && <td className="px-6 py-4 font-medium text-gray-600">{d.po_no}</td>}
                         {visibleColumns.includes('date') && <td className="px-6 py-4">{new Date(d.delivery_date).toLocaleDateString()}</td>}
@@ -346,7 +347,7 @@ export default function Deliveries() {
                         {visibleColumns.includes('cost') && <td className="px-6 py-4 font-bold text-gray-800">₱{Number(d.total_cost).toFixed(2)}</td>}
                         {visibleColumns.includes('received_by') && <td className="px-6 py-4 text-gray-500">{d.received_by}</td>}
                         <td className="px-6 py-4 text-right">
-                          <button onClick={() => handleEdit(d)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                          <button onClick={(e) => { e.stopPropagation(); handleEdit(d); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                           </button>
                         </td>
@@ -377,7 +378,7 @@ export default function Deliveries() {
             {/* Mobile Card View */}
             <div className="md:hidden flex flex-col divide-y divide-gray-100">
               {paginatedData.map((d) => (
-                <div key={d.id} className="p-4 space-y-3">
+                <div key={d.id} className="p-4 space-y-3 cursor-pointer" onClick={() => setSelectedRecord(d)}>
                   <div className="flex justify-between items-start">
                     <div>
                       {visibleColumns.includes('id_date') && (
@@ -387,7 +388,7 @@ export default function Deliveries() {
                         </>
                       )}
                     </div>
-                    <button onClick={() => handleEdit(d)} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
+                    <button onClick={(e) => { e.stopPropagation(); handleEdit(d); }} className="p-2 text-blue-600 bg-blue-50 rounded-lg">
                       <Edit2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -437,7 +438,66 @@ export default function Deliveries() {
     
       <Suspense fallback={null}>
         {showScanner && <QRScannerModal isOpen={showScanner} onClose={() => setShowScanner(false)} onScanned={handleScanResult} />}
-      </Suspense>
+      
+      <Modal isOpen={!!selectedRecord} onClose={() => setSelectedRecord(null)} title="Delivery Details">
+        {selectedRecord && (
+          <div className="space-y-4 text-sm">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Delivery ID</p>
+                <p className="font-medium text-gray-900">{selectedRecord.delivery_id}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">PO No.</p>
+                <p className="font-medium text-gray-900">{selectedRecord.po_no || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Date</p>
+                <p className="font-medium text-gray-900">{selectedRecord.delivery_date}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Received By</p>
+                <p className="font-medium text-gray-900">{selectedRecord.received_by}</p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Material</p>
+                <p className="font-medium text-gray-900">{selectedRecord.materials?.material_description}</p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Supplier</p>
+                <p className="font-medium text-gray-900">{selectedRecord.suppliers?.supplier_name}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Quantity</p>
+                <p className="font-medium text-gray-900">{selectedRecord.quantity}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Cost</p>
+                <p className="font-medium text-gray-900">₱{selectedRecord.total_cost?.toLocaleString()}</p>
+              </div>
+            </div>
+            
+            {selectedRecord.photo_url && (
+              <div className="mt-4 border-t pt-4">
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-2">Photo Attachment</p>
+                <div className="bg-gray-50 rounded-lg p-2 border border-gray-100 flex justify-center">
+                  <img src={selectedRecord.photo_url} alt="Delivery Attachment" className="max-h-64 rounded-md object-contain" />
+                </div>
+              </div>
+            )}
+            
+            <div className="flex gap-3 pt-4 border-t mt-6">
+              <button onClick={() => setSelectedRecord(null)} className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                Close
+              </button>
+              <button onClick={() => { handleEdit(selectedRecord); setSelectedRecord(null); }} className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2">
+                <Edit2 className="w-4 h-4" /> Edit Record
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+</Suspense>
     </div>
   );
 }
