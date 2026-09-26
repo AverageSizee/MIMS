@@ -244,7 +244,9 @@ export default function Returns() {
   return (<div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-medium text-gray-800">Return Records (Inbound)</h2>
-        <button
+        
+        <div className="flex items-center gap-2">
+          <button
           onClick={() => {
             if (showForm) {
               setShowForm(false);
@@ -260,9 +262,10 @@ export default function Returns() {
           <Plus className="w-4 h-4 mr-2" />
           {showForm ? 'Cancel' : 'Record Return'}
         </button>
-        <button onClick={() => setShowScanner(true)} title="Scan QR Code to auto-fill form" className="bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-900 transition-colors text-sm font-medium ml-2">
-          📷 Scan QR
+        <button onClick={() => setShowScanner(true)} title="Scan QR Code" className="p-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors">
+          <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3m0 3h3m-3 0v-3m-3 3h.01"/></svg>
         </button>
+        </div>
       </div>
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} title={editingId ? 'Edit Record' : 'Add New Record'}>
