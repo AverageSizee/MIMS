@@ -297,6 +297,16 @@ export default function Deliveries() {
               <input required type="text" name="received_by" value={formData.received_by} onChange={handleInputChange} className="w-full border border-gray-300 rounded-md p-2" />
             </div>
             
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Photo Attachment</label>
+              <input type="file" accept="image/*" onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })} className="w-full border border-gray-300 rounded-md p-1.5 text-sm bg-white" />
+              {formData.photo_url && !formData.file && (
+                <button type="button" onClick={() => setPhotoModalUrl(formData.photo_url)} className="text-blue-600 text-sm mt-2 hover:underline block text-left flex items-center gap-1">
+                  <ImageIcon className="w-4 h-4" /> View Current Attachment
+                </button>
+              )}
+            </div>
             <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
               <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
                 Cancel
