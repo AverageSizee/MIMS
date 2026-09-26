@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import Modal from '../components/Modal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { supabase } from '../lib/supabase';
-import { Plus, Loader2, Edit2, Trash2, ImageIcon } from 'lucide-react';
+import { Plus, Loader2, Edit2, Trash2, ImageIcon, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ColumnToggle from '../components/ColumnToggle';
 
@@ -74,7 +74,7 @@ export default function Deliveries() {
     quantity: '',
     received_by: '',
     photo_url: '',
-    file: null
+    files: []
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -137,7 +137,7 @@ export default function Deliveries() {
       quantity: delivery.quantity || '',
       received_by: delivery.received_by || '',
       photo_url: delivery.photo_url || '',
-      file: null
+      files: []
     });
     setEditingId(delivery.id);
     setShowForm(true);
@@ -153,19 +153,21 @@ export default function Deliveries() {
       const quantity = parseInt(formData.quantity) || 0;
       
       
-      let finalPhotoUrl = formData.photo_url;
-      if (formData.file) {
-        const fileExt = formData.file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = `deliveries/${fileName}`;
-        const { error: uploadError } = await supabase.storage.from('attachments').upload(filePath, formData.file);
-        if (uploadError) {
-            console.error('Upload error:', uploadError);
-            alert('Upload failed: Please ensure the "attachments" bucket exists and is public.');
-            throw uploadError;
+      let finalUrls = formData.photo_url ? formData.photo_url.split(',').filter(Boolean) : [];
+      if (formData.files && formData.files.length > 0) {
+        for (const file of formData.files) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const filePath = `deliveries/${fileName}`;
+          const { error: uploadError } = await supabase.storage.from('attachments').upload(filePath, file);
+          if (uploadError) {
+              console.error('Upload error:', uploadError);
+              alert('Upload failed: Please ensure the "attachments" bucket exists and is public.');
+              throw uploadError;
+          }
+          const { data: { publicUrl } } = supabase.storage.from('attachments').getPublicUrl(filePath);
+          finalUrls.push(publicUrl);
         }
-        const { data: { publicUrl } } = supabase.storage.from('attachments').getPublicUrl(filePath);
-        finalPhotoUrl = publicUrl;
       }
       const payload = {
         po_no: formData.po_no,
@@ -176,7 +178,7 @@ export default function Deliveries() {
         unit_cost: unit_cost,
         total_cost: quantity * unit_cost,
         received_by: formData.received_by,
-        photo_url: finalPhotoUrl
+        photo_url: finalUrls.join(',')
       };
 
       if (editingId) {
@@ -315,13 +317,45 @@ export default function Deliveries() {
             
             
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Photo Attachment</label>
-              <input type="file" accept="image/*" onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })} className="w-full border border-gray-300 rounded-md p-1.5 text-sm bg-white" />
-              {formData.photo_url && !formData.file && (
-                <button type="button" onClick={() => setPhotoModalUrl(formData.photo_url)} className="text-blue-600 text-sm mt-2 hover:underline block text-left flex items-center gap-1">
-                  <ImageIcon className="w-4 h-4" /> View Current Attachment
-                </button>
-              )}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Photo Attachments</label>
+              <input type="file" multiple accept="image/*" onChange={(e) => {
+                 if(e.target.files.length) {
+                    setFormData(prev => ({ ...prev, files: [...(prev.files || []), ...Array.from(e.target.files)] }));
+                 }
+              }} className="w-full border border-gray-300 rounded-md p-1.5 text-sm bg-white" />
+              
+              <div className="mt-3 space-y-2">
+                {formData.photo_url && formData.photo_url.split(',').filter(Boolean).map((url, idx) => {
+                   const fileName = url.split('/').pop();
+                   return (
+                     <div key={url} className="flex items-center gap-2 text-sm bg-blue-50 p-2 rounded-lg border border-blue-100">
+                       <button type="button" onClick={() => setPhotoModalUrl(url)} className="text-blue-700 hover:underline flex items-center gap-2 truncate flex-1 text-left font-medium">
+                         <ImageIcon className="w-4 h-4 shrink-0" /> <span className="truncate">{fileName}</span>
+                       </button>
+                       <button type="button" onClick={() => {
+                          const newUrls = formData.photo_url.split(',').filter(Boolean).filter(u => u !== url).join(',');
+                          setFormData(prev => ({ ...prev, photo_url: newUrls }));
+                       }} className="text-red-500 p-1 hover:bg-red-100 rounded-md transition-colors" title="Remove attachment">
+                         <X className="w-4 h-4" />
+                       </button>
+                     </div>
+                   );
+                })}
+                {formData.files && formData.files.length > 0 && formData.files.map((f, idx) => (
+                     <div key={idx} className="flex items-center gap-2 text-sm bg-gray-50 p-2 rounded-lg border border-gray-200">
+                       <ImageIcon className="w-4 h-4 shrink-0 text-gray-500" />
+                       <span className="truncate flex-1 text-gray-700">{f.name}</span>
+                       <span className="text-xs text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full font-medium">Pending</span>
+                       <button type="button" onClick={() => {
+                          const newFiles = [...formData.files];
+                          newFiles.splice(idx, 1);
+                          setFormData(prev => ({ ...prev, files: newFiles }));
+                       }} className="text-red-500 p-1 hover:bg-red-100 rounded-md transition-colors" title="Remove file">
+                         <X className="w-4 h-4" />
+                       </button>
+                     </div>
+                ))}
+              </div>
             </div>
             <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
               <button type="button" onClick={() => { setShowForm(false); setEditingId(null); setFormData(initialFormState); }} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium text-sm">
@@ -504,14 +538,18 @@ export default function Deliveries() {
             </div>
             
             <div className="col-span-2 border-t pt-4 mt-2">
-                <p className="text-gray-500 text-xs uppercase tracking-wider mb-2">Photo Attachment</p>
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-2">Photo Attachments</p>
                 {selectedRecord.photo_url ? (
-                  <button onClick={(e) => { e.stopPropagation(); setPhotoModalUrl(selectedRecord.photo_url); }} className="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors w-full justify-center font-medium">
-                    <ImageIcon className="w-4 h-4" /> View Attached Photo
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    {selectedRecord.photo_url.split(',').filter(Boolean).map((url, idx) => (
+                      <button key={idx} onClick={(e) => { e.stopPropagation(); setPhotoModalUrl(url); }} className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors justify-center font-medium truncate">
+                        <ImageIcon className="w-4 h-4 shrink-0" /> <span className="truncate">View Photo {idx+1}</span>
+                      </button>
+                    ))}
+                  </div>
                 ) : (
                   <div className="bg-gray-50 text-gray-400 text-sm p-4 rounded-lg text-center border border-dashed border-gray-200">
-                    No photo attached
+                    No photos attached
                   </div>
                 )}
               </div>
