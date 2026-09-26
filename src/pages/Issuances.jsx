@@ -96,7 +96,7 @@ export default function Issuances() {
     setLoading(true);
     try {
       const [issRes, matRes] = await Promise.all([
-        supabase.from('issuances').select('*, materials(material_description)').order('created_at', { ascending: false }),
+        supabase.from('issuances').select('*, materials(material_description)').order('issuance_id', { ascending: false }),
         supabase.from('materials').select('id, material_id, material_description, unit_cost')
       ]);
       

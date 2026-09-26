@@ -96,7 +96,7 @@ export default function Returns() {
     setLoading(true);
     try {
       const [retRes, matRes] = await Promise.all([
-        supabase.from('returns').select('*, materials(material_description)').order('created_at', { ascending: false }),
+        supabase.from('returns').select('*, materials(material_description)').order('return_id', { ascending: false }),
         supabase.from('materials').select('id, material_id, material_description, unit_cost')
       ]);
       

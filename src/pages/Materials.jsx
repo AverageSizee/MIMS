@@ -59,7 +59,7 @@ export default function Materials() {
   async function fetchMaterials() {
     try {
       const [matRes, catRes] = await Promise.all([
-          supabase.from('inventory_dashboard').select('*').order('created_at', { ascending: false }),
+          supabase.from('inventory_dashboard').select('*').order('material_id', { ascending: false }),
           supabase.from('categories').select('name').order('name')
         ]);
         

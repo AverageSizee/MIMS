@@ -75,7 +75,7 @@ export default function Suppliers() {
   async function fetchData() {
     try {
       const [suppRes, matRes] = await Promise.all([
-        supabase.from('suppliers').select('*').order('created_at', { ascending: false }),
+        supabase.from('suppliers').select('*').order('supplier_id', { ascending: false }),
         supabase.from('materials').select('material_description').order('material_description')
       ]);
       if (suppRes.error) throw suppRes.error;
