@@ -487,14 +487,18 @@ export default function Deliveries() {
               </div>
             </div>
             
-            {selectedRecord.photo_url && (
-              <div className="mt-4 border-t pt-4">
+            <div className="col-span-2 border-t pt-4 mt-2">
                 <p className="text-gray-500 text-xs uppercase tracking-wider mb-2">Photo Attachment</p>
-                <div className="bg-gray-50 rounded-lg p-2 border border-gray-100 flex justify-center">
-                  <img src={selectedRecord.photo_url} alt="Delivery Attachment" className="max-h-64 rounded-md object-contain" />
-                </div>
+                {selectedRecord.photo_url ? (
+                  <button onClick={(e) => { e.stopPropagation(); setPhotoModalUrl(selectedRecord.photo_url); }} className="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors w-full justify-center font-medium">
+                    <ImageIcon className="w-4 h-4" /> View Attached Photo
+                  </button>
+                ) : (
+                  <div className="bg-gray-50 text-gray-400 text-sm p-4 rounded-lg text-center border border-dashed border-gray-200">
+                    No photo attached
+                  </div>
+                )}
               </div>
-            )}
             
             <div className="flex gap-3 pt-4 border-t mt-6">
               <button onClick={() => setSelectedRecord(null)} className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
@@ -508,6 +512,17 @@ export default function Deliveries() {
         )}
       </Modal>
 </Suspense>
+
+      <Modal isOpen={!!photoModalUrl} onClose={() => setPhotoModalUrl(null)} title="Photo Attachment">
+        <div className="p-2 flex justify-center bg-gray-50 rounded-lg min-h-[200px] items-center">
+          {photoModalUrl ? (
+            <img src={photoModalUrl} alt="Attachment" className="max-w-full max-h-[70vh] rounded-lg shadow-sm animate-in zoom-in duration-300" />
+          ) : (
+            <p className="text-gray-500 text-sm">No photo available</p>
+          )}
+        </div>
+        <button onClick={() => setPhotoModalUrl(null)} className="w-full mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium text-sm">Close</button>
+      </Modal>
     </div>
   );
 }
